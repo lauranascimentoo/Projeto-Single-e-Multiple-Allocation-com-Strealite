@@ -1,0 +1,79 @@
+Solution for n=10, p=2 : 
+Objective  : 163603.94
+Hubs :  7,  3
+ 
+Solution for n=10, p=3 : 
+Objective  : 131581.79
+Hubs :  8,  7,  3
+ 
+Solution for n=10, p=4 : 
+Objective  : 107354.73
+Hubs :  8,  7,  3,  2
+ 
+Solution for n=10, p=5 : 
+Objective  : 86028.88
+Hubs :  8,  7,  3,  2,  1
+ 
+Solution for n=20, p=2 : 
+Objective  : 168599.79
+Hubs : 14,  6
+ 
+Solution for n=20, p=3 : 
+Objective  : 148048.30
+Hubs : 14, 12,  6
+ 
+Solution for n=20, p=4 : 
+Objective  : 131665.43
+Hubs : 14, 12,  6,  2
+ 
+Solution for n=20, p=5 : 
+Objective  : 118934.97
+Hubs : 14, 13, 12,  6,  2
+ 
+Solution for n=25, p=2 : 
+Objective  : 171298.10
+Hubs : 18,  8
+ 
+Solution for n=25, p=3 : 
+Objective  : 151080.66
+Hubs : 18,  8,  2
+ 
+Solution for n=25, p=4 : 
+Objective  : 135638.58
+Hubs : 18, 17,  8,  2
+ 
+Solution for n=25, p=5 : 
+Objective  : 120581.99
+Hubs : 20, 18, 17,  8,  2
+ 
+Solution for n=40, p=2 : 
+Objective  : 173415.96
+Hubs : 28, 12
+ 
+Solution for n=40, p=3 : 
+Objective  : 155458.61
+Hubs : 28, 23, 12
+ 
+Solution for n=40, p=4 : 
+Objective  : 140682.74
+Hubs : 28, 26, 23, 12
+ 
+Solution for n=40, p=5 : 
+Objective  : 130384.74
+Hubs : 28, 26, 23, 13,  3
+ 
+Solution for n=50, p=2 : 
+Hubs : 35, 14
+ 
+Solution for n=50, p=3 : 
+Objective  : 156014.73
+Hubs : 35, 28, 14
+ 
+Solution for n=50, p=4 : 
+Objective  : 141153.38
+Hubs : 35, 32, 28, 14
+ 
+Solution for n=50, p=5 : 
+Objective  : 129412.60
+Hubs : 35, 32, 28, 14,  4
+ 

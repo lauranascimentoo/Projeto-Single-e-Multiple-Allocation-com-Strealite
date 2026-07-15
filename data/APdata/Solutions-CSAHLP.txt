@@ -1,0 +1,102 @@
+Problem 10LL
+Objective: 224250.05 
+Hubs:  2, 3, 6,
+Allocation:  2  3  2  3  6  3  6  6  6  6 
+ 
+Problem 10LT
+Objective: 250992.26 
+Hubs:  0, 3, 4, 9,
+Allocation:  0  3  4  3  4  3  9  9  9  9 
+ 
+Problem 10TL
+Objective: 263399.94 
+Hubs:  3, 4, 9,
+Allocation:  4  3  4  3  4  3  9  9  9  9 
+ 
+Problem 10TT
+Objective: 263399.94 
+Hubs:  3, 4, 9,
+Allocation:  4  3  4  3  4  3  9  9  9  9 
+ 
+Problem 20LL
+Objective: 234690.96 
+Hubs:  6,13,
+Allocation:  6  6  6  6  6  6  6  6 13  6  6  6 13 13 13 13 13 13 13 13 
+ 
+Problem 20LT
+Objective: 253517.40 
+Hubs:  9,13,
+Allocation:  9  9  9  9  9  9  9  9  9  9  9  9  9 13 13  9  9 13 13 13 
+ 
+Problem 20TL
+Objective: 271128.18 
+Hubs:  6,18,
+Allocation:  6  6  6  6  6  6  6  6 18  6  6  6 18 18 18 18 18 18 18 18 
+ 
+Problem 20TT
+Objective: 296035.40 
+Hubs:  0, 9,18,
+Allocation:  0  0  9  9  9  9  9  9  9  9  9  9  9 18  9  9 18 18 18 18 
+ 
+Problem 25LL
+Objective: 238977.95 
+Hubs:  7,17,
+Allocation:  7  7  7  7  7  7  7  7  7  7  7  7  7  7  7 17 17 17 17 17 17 17 17 17 17 
+ 
+Problem 25LT
+Objective: 276372.50 
+Hubs:  8,15,24,
+Allocation:  8  8  8  8  8 15  8  8  8  8 15 15  8  8  8 15 15 24 24 24 15 15 24 24 24 
+ 
+Problem 25TL
+Objective: 310317.64 
+Hubs:  8,22,
+Allocation:  8  8  8  8  8 22  8  8  8  8 22 22  8  8  8 22 22 22 22 22 22 22 22 22 22 
+ 
+Problem 25TT
+Objective: 348369.15 
+Hubs:  8,15,24,
+Allocation:  8  8  8  8  8 15  8  8  8  8 15 15  8  8  8 15 15 24 24 24 15 15 24 24 24 
+ 
+Problem 40LL
+Objective: 241955.71 
+Hubs: 10,28,
+Allocation: 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 28 10 10 10 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 28 
+ 
+Problem 40LT
+Objective: 272218.32 
+Hubs: 13,25,29,
+Allocation: 13 13 13 13 13 13 13 13 25 25 13 13 13 13 13 13 25 25 25 13 13 13 13 13 25 25 25 29 25 29 29 29 25 25 25 25 25 29 29 29 
+ 
+Problem 40TL
+Objective: 298919.01 
+Hubs: 13,18,
+Allocation: 13 18 13 13 13 13 13 13 18 18 18 13 13 13 13 13 18 18 18 18 18 13 13 13 18 18 18 18 18 18 18 13 18 18 18 18 18 18 18 18 
+ 
+Problem 40TT
+Objective: 354874.10 
+Hubs: 13,18,39,
+Allocation: 13 13 13 13 13 13 13 13 18 13 13 13 13 13 13 13 18 18 18 13 18 13 13 13 18 18 18 39 18 39 39 39 18 18 18 39 39 39 39 39 
+ 
+Problem 50LL
+Objective: 238520.59 
+Hubs: 14,34,
+Allocation: 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 34 34 34 34 14 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 34 
+ 
+Problem 50LT
+Objective: 272897.49 
+Hubs:  5,25,31,45,
+Allocation:  5  5  5  5  5  5  5  5  5  5 31 31 31  5  5 25 25 25 25 25 31 31 31 25 25 25 25 25 25 25 31 31 31 31 45 45 25 25 25 25 31 31 31 31 45 45 45 45 45 25 
+ 
+Problem 50TL
+Objective: 319015.77 
+Hubs:  2,23,
+Allocation:  2  2  2  2  2  2  2  2  2  2 23  2 23  2 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 23 
+ 
+Problem 50TT
+Objective: 417440.99 **
+Hubs:  5,25,27,47,
+Allocation:  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5 27 27 27 25 25 25 25 25 25 27 27 27 27 25 25 25 47 25 47 25 27 27 27 47 25 25 47 47 47 47 47 47 47 
+ 
+** NOTE: For problem 50TT optimality has not been proven. The solution given
+         is the best known heuristic solution.
