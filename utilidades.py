@@ -36,14 +36,17 @@ def load_ap_instance(file_path, n_limit=None, override_p=None):
     original_p = int(tokens[idx])
     idx += 1
 
-    delta = float(tokens[idx])
-    idx += 1
+    params = []
+    while idx < len(tokens) and len(params) < 3:
+        try:
+            params.append(float(tokens[idx]))
+        except ValueError:
+            break
+        idx += 1
 
-    alpha = float(tokens[idx])
-    idx += 1
-
-    chi = float(tokens[idx])
-    idx += 1
+    delta = params[0] if len(params) > 0 else 0.75
+    alpha = params[1] if len(params) > 1 else delta
+    chi = params[2] if len(params) > 2 else delta
 
     if n_limit is None:
         n = original_n
@@ -192,7 +195,7 @@ def plot_solution(coords, flow, selected_hubs, selected_routes, output_path, tit
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
     print(f"\nFigura salva em: {output_path}")
 
-    if os.environ.get("AP_SKIP_PLOT_SHOW") != "1":
+    if os.environ.get("SP_SKIP_PLOT_SHOW") != "1":
         plt.show()
 
     plt.close(fig)

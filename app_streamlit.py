@@ -1,4 +1,4 @@
-"""Interface Streamlit para executar os modelos AP."""
+"""Interface Streamlit para executar os modelos SP."""
 
 import contextlib
 import io
@@ -10,11 +10,12 @@ import streamlit as st
 
 
 ROOT_DIR = Path(__file__).resolve().parent
-DATA_DIR = ROOT_DIR / "data" / "APdata"
+DATA_DIR = ROOT_DIR / "data" / "SPdata"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 
 from multiple_allocation import solve_multiple_allocation_p_hub
 from single_allocation import solve_single_allocation_p_hub
+from multiple_allocation_ca import estimate_ca
 from utilidades import load_ap_instance, plot_solution
 
 
@@ -26,16 +27,126 @@ SOLVERS = {
 
 def read_instance_metadata(path):
     tokens = path.read_text(encoding="utf-8").split()
+    n = int(tokens[0])
+    flow_size = n * n
+    metadata_start = 1 + n * 2 + flow_size
+    metadata = tokens[metadata_start:]
+    p = int(metadata[0]) if len(metadata) > 0 else 0
+    params = [float(value) for value in metadata[1:]]
+    delta = params[0] if len(params) > 0 else 0.75
+    alpha = params[1] if len(params) > 1 else delta
+    chi = params[2] if len(params) > 2 else delta
     return {
         "name": path.name,
         "path": path,
         "relative_path": path.relative_to(ROOT_DIR).as_posix(),
-        "nodes": int(tokens[0]),
-        "hubs": int(tokens[1 + int(tokens[0]) * 2 + int(tokens[0]) * int(tokens[0])]),
+        "nodes": n,
+        "hubs": p,
+        "delta": delta,
+        "alpha": alpha,
+        "chi": chi,
     }
 
 
-@st.cache_data(show_spinner=False)
+def estimate_ca_compat(**kwargs):
+    """Compatibility wrapper for estimate_ca.
+
+    Tries to call `estimate_ca` using keyword args; if a TypeError about an
+    unexpected keyword occurs (some runtime mismatch), falls back to calling
+    `estimate_ca` using positional arguments in the expected order.
+    """
+    try:
+        return estimate_ca(**kwargs)
+    except TypeError as e:
+        msg = str(e)
+        if "unexpected keyword" not in msg:
+            raise
+
+    # Build positional call using known argument names / defaults.
+    nodes = kwargs.get("nodes")
+    coords = kwargs.get("coords")
+    flow = kwargs.get("flow")
+    distance = kwargs.get("distance")
+    hub_indices = kwargs.get("hub_indices")
+    p = kwargs.get("p")
+    Q_col = kwargs.get("Q_col") if "Q_col" in kwargs else kwargs.get("Q") or kwargs.get("Q_col")
+    rho_col = kwargs.get("rho_col") if "rho_col" in kwargs else kwargs.get("rho")
+    beta_col = kwargs.get("beta_col") if "beta_col" in kwargs else kwargs.get("beta")
+    Q_ent = kwargs.get("Q_ent") if "Q_ent" in kwargs else kwargs.get("Q")
+    rho_ent = kwargs.get("rho_ent") if "rho_ent" in kwargs else kwargs.get("rho")
+    beta_ent = kwargs.get("beta_ent") if "beta_ent" in kwargs else kwargs.get("beta")
+    area_per_node = kwargs.get("area_per_node")
+    cost_per_km_col = kwargs.get("cost_per_km_col") if "cost_per_km_col" in kwargs else kwargs.get("cost_per_km")
+    cost_per_km_ent = kwargs.get("cost_per_km_ent") if "cost_per_km_ent" in kwargs else kwargs.get("cost_per_km")
+    c_hub = kwargs.get("c_hub")
+    alpha = kwargs.get("alpha")
+    v = kwargs.get("v", 40.0)
+
+    return estimate_ca(
+        nodes,
+        coords,
+        flow,
+        distance,
+        hub_indices,
+        p,
+        Q_col,
+        rho_col,
+        beta_col,
+        Q_ent,
+        rho_ent,
+        beta_ent,
+        area_per_node,
+        cost_per_km_col,
+        cost_per_km_ent,
+        c_hub,
+        alpha,
+        v,
+    )
+
+
+def _nearest_nodes_to_centroids(nodes, coords, centroids):
+    """Given centroids (list of (lat,lon) or dict values), return a list
+    of node indices (from `nodes`) that are nearest to each centroid.
+
+    `centroids` can be a list of (x,y) tuples or a list/dict of objects with
+    latitude/longitude keys. The returned list preserves the order of centroids
+    as given.
+    """
+    seeds = []
+    # Normalize centroids input
+    pts = []
+    if isinstance(centroids, dict):
+        # values are records
+        for v in centroids.values():
+            if isinstance(v, (list, tuple)) and len(v) >= 2:
+                pts.append((v[0], v[1]))
+    elif isinstance(centroids, list):
+        for item in centroids:
+            if isinstance(item, (list, tuple)) and len(item) >= 2:
+                pts.append((item[0], item[1]))
+            elif isinstance(item, dict):
+                lat = item.get("Latitude_Centroide") or item.get("Latitude") or item.get("lat")
+                lon = item.get("Longitude_Centroide") or item.get("Longitude") or item.get("lon")
+                if lat is not None and lon is not None:
+                    pts.append((lat, lon))
+
+    for cx, cy in pts:
+        best = None
+        bestd = float("inf")
+        for n in nodes:
+            x, y = coords.get(n, (None, None))
+            if x is None or y is None:
+                continue
+            d = (x - cx) ** 2 + (y - cy) ** 2
+            if d < bestd:
+                bestd = d
+                best = n
+        if best is not None:
+            seeds.append(best)
+
+    return seeds
+
+
 def list_instances():
     instances = []
 
@@ -198,9 +309,9 @@ def filter_routes(rows, origins, destinations, hubs):
     return sorted(filtered, key=lambda row: row["fluxo"], reverse=True)
 
 
-def run_model(model_name, instance, n_limit, override_p, time_limit):
+def run_model(model_name, instance, n_limit, override_p, alpha, chi, delta, time_limit):
     os.environ["MPLBACKEND"] = "Agg"
-    os.environ["AP_SKIP_PLOT_SHOW"] = "1"
+    os.environ["SP_SKIP_PLOT_SHOW"] = "1"
     os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
     previous_cwd = Path.cwd()
@@ -209,7 +320,7 @@ def run_model(model_name, instance, n_limit, override_p, time_limit):
 
     try:
         os.chdir(ROOT_DIR)
-        nodes, coords, flow, distance, p, alpha, chi, delta = load_ap_instance(
+        nodes, coords, flow, distance, p, _, _, _ = load_ap_instance(
             file_path=instance["relative_path"],
             n_limit=n_limit,
             override_p=override_p,
@@ -232,14 +343,14 @@ def run_model(model_name, instance, n_limit, override_p, time_limit):
 
             image_path = None
             if selected_hubs:
-                image_path = OUTPUTS_DIR / f"ap_solution_{model_name}.png"
+                image_path = OUTPUTS_DIR / f"sp_solution_{model_name}.png"
                 plot_solution(
                     coords=coords,
                     flow=flow,
                     selected_hubs=selected_hubs,
                     selected_routes=selected_routes,
                     output_path=str(image_path),
-                    title=f"Solução AP - alocação {model_name}",
+                    title=f"Solução SP - alocação {model_name}",
                 )
 
         objective = None
@@ -279,7 +390,7 @@ def run_model(model_name, instance, n_limit, override_p, time_limit):
 
 def configure_page():
     st.set_page_config(
-        page_title="AP Hub Location",
+        page_title="SP Hub Location",
         page_icon=":material/hub:",
         layout="wide",
     )
@@ -288,13 +399,13 @@ def configure_page():
 def main():
     configure_page()
 
-    st.title("AP Hub Location")
-    st.caption("Execute os modelos de 'Single Allocation' e 'Multiple Allocation' utilizando as instâncias AP locais.")
+    st.title("SP Hub Location")
+    st.caption("Execute o modelo 'Multiple Allocation' para a instância local SP 11.5.")
 
     instances = list_instances()
 
     if not instances:
-        st.error("Nenhuma instância válida foi encontrada em data/APdata.")
+        st.error("Nenhuma instância válida foi encontrada em data/SPdata.")
         return
 
     default_index = next(
@@ -307,9 +418,9 @@ def main():
 
         model_name = st.segmented_control(
             "Modelo",
-            options=["single", "multiple"],
-            default="single",
-            format_func=lambda value: "Single Allocation" if value == "single" else "Multiple Allocation",
+            options=["multiple"],
+            default="multiple",
+            format_func=lambda value: "Multiple Allocation",
         )
 
         selected_name = st.selectbox(
@@ -340,6 +451,39 @@ def main():
             step=1,
         )
 
+        st.markdown("### Parâmetros de custo")
+        delta_col, alpha_col, chi_col = st.columns(3)
+
+        with delta_col:
+            delta = st.number_input(
+                "Delta",
+                min_value=0.0,
+                value=float(selected_instance.get("delta", 0.75)),
+                step=0.01,
+                format="%.2f",
+            )
+            st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Custo de distribuição do segundo hub para o destino.</span>", unsafe_allow_html=True)
+
+        with alpha_col:
+            alpha = st.number_input(
+                "Alpha",
+                min_value=0.0,
+                value=float(selected_instance.get("alpha", 0.75)),
+                step=0.01,
+                format="%.2f",
+            )
+            st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Custo de transferência entre hubs.</span>", unsafe_allow_html=True)
+
+        with chi_col:
+            chi = st.number_input(
+                "Chi",
+                min_value=0.0,
+                value=float(selected_instance.get("chi", 0.75)),
+                step=0.01,
+                format="%.2f",
+            )
+            st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Custo de coleta da origem até o primeiro hub.</span>", unsafe_allow_html=True)
+
         time_limit = st.number_input(
             "Tempo limite (segundos)",
             min_value=1,
@@ -348,10 +492,103 @@ def main():
             step=30,
         )
 
+        st.markdown("### Aproximação contínua (CA)")
+        ca_Q = st.number_input("Capacidade do veículo (pacotes)", min_value=1.0, value=40.0, step=1.0, format="%.1f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Número máximo de pacotes que o veículo pode transportar por rota.</span>", unsafe_allow_html=True)
+
+        ca_rho = st.number_input("Pacotes por parada", min_value=0.1, value=1.0, step=0.1, format="%.1f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Média de pacotes atendidos em cada parada.</span>", unsafe_allow_html=True)
+
+        ca_beta = st.number_input("Coeficiente CA", min_value=0.0, value=0.75, step=0.01, format="%.2f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Coeficiente usado para estimar a distância interna das regiões.</span>", unsafe_allow_html=True)
+
+        ca_cost_per_km = st.number_input("Custo por km", min_value=0.0, value=1.0, step=0.1, format="%.2f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Custo operacional por quilômetro usado tanto na coleta quanto na entrega.</span>", unsafe_allow_html=True)
+
+        ca_area_per_node = st.number_input("Área por nó (km²)", min_value=0.01, value=1.0, step=0.1, format="%.2f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Área mínima atribuída a cada nó para evitar regiões com área zero.</span>", unsafe_allow_html=True)
+
+        ca_c_hub = st.number_input("Custo inter-hub por km", min_value=0.0, value=1.0, step=0.1, format="%.2f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Custo por quilômetro para o transporte entre hubs.</span>", unsafe_allow_html=True)
+
+        ca_alpha = st.number_input("Fator de desconto inter-hub", min_value=0.0, max_value=1.0, value=0.75, step=0.01, format="%.2f")
+        st.markdown("<span style='font-size:0.75em;color:#bbb;display:block;margin-top:0.2em;'>Fator aplicado ao custo de transporte entre hubs.</span>", unsafe_allow_html=True)
+
+        st.markdown("**Método de partição/atendimento: Áreas pré-fixadas**")
+        ca_method = "Fixed regions"
+
         run_clicked = st.button("Calcular", type="primary", use_container_width=True)
 
     estimates = estimate_size(model_name, int(n_limit))
     insights = instance_insights(selected_instance, int(n_limit), int(override_p))
+
+    with st.sidebar:
+        st.markdown("**Custos estimados pela CA**")
+        ca_cost_summary = {}
+        try:
+            hub_idxs_for_preview = None
+            if ca_method.startswith("Fixed regions"):
+                try:
+                    import json
+
+                    centroids_path = ROOT_DIR / "sp_spatial_gravity_model" / "output" / "centroides_populacionais_sp.json"
+                    if centroids_path.exists():
+                        with open(centroids_path, "r", encoding="utf-8") as f:
+                            centroids = json.load(f)
+                        hub_idxs_for_preview = _nearest_nodes_to_centroids(insights["nodes"], insights["coords"], centroids)
+                        if not hub_idxs_for_preview:
+                            hub_idxs_for_preview = None
+                except Exception:
+                    hub_idxs_for_preview = None
+
+            ca_preview = estimate_ca_compat(
+                nodes=insights["nodes"],
+                coords=insights["coords"],
+                flow=insights["flow"],
+                distance=insights["distance"],
+                hub_indices=hub_idxs_for_preview,
+                p=int(override_p),
+                Q_col=float(ca_Q),
+                rho_col=float(ca_rho),
+                beta_col=float(ca_beta),
+                Q_ent=float(ca_Q),
+                rho_ent=float(ca_rho),
+                beta_ent=float(ca_beta),
+                area_per_node=float(ca_area_per_node),
+                cost_per_km_col=float(ca_cost_per_km),
+                cost_per_km_ent=float(ca_cost_per_km),
+                c_hub=float(ca_c_hub),
+                alpha=float(ca_alpha),
+            )
+            if isinstance(ca_preview, dict) and "C_col" in ca_preview:
+                C_col = ca_preview.get("C_col", {})
+                C_ent = ca_preview.get("C_ent", {})
+                C_hub = ca_preview.get("C_hub", {})
+                all_col = [value for row in C_col.values() for value in row.values()]
+                all_ent = [value for row in C_ent.values() for value in row.values()]
+                all_hub = [value for row in C_hub.values() for value in row.values()]
+                ca_cost_summary = {
+                    "collection_min": min(all_col, default=0.0),
+                    "collection_max": max(all_col, default=0.0),
+                    "collection_mean": sum(all_col) / max(len(all_col), 1),
+                    "delivery_min": min(all_ent, default=0.0),
+                    "delivery_max": max(all_ent, default=0.0),
+                    "delivery_mean": sum(all_ent) / max(len(all_ent), 1),
+                    "interhub_min": min(all_hub, default=0.0),
+                    "interhub_max": max(all_hub, default=0.0),
+                    "interhub_mean": sum(all_hub) / max(len(all_hub), 1),
+                }
+            else:
+                ca_cost_summary = {}
+        except Exception:
+            ca_cost_summary = {}
+
+        if ca_cost_summary:
+            cost_columns = st.columns(4)
+            cost_columns[0].metric("Coleta min", format_br(ca_cost_summary["collection_min"]))
+            cost_columns[1].metric("Coleta max", format_br(ca_cost_summary["collection_max"]))
+            cost_columns[2].metric("Coleta média", format_br(ca_cost_summary["collection_mean"]))
+            cost_columns[3].metric("Entrega média", format_br(ca_cost_summary["delivery_mean"]))
 
     metric_columns = st.columns(3)
     metric_columns[0].metric("Fluxos", format_int_br(estimates["flows"]))
@@ -379,6 +616,9 @@ def main():
                 instance=selected_instance,
                 n_limit=int(n_limit),
                 override_p=int(override_p),
+                alpha=float(alpha),
+                chi=float(chi),
+                delta=float(delta),
                 time_limit=int(time_limit),
             )
         st.session_state["last_result"] = result
@@ -387,6 +627,9 @@ def main():
             "instance": selected_instance["name"],
             "n_limit": int(n_limit),
             "override_p": int(override_p),
+            "alpha": float(alpha),
+            "chi": float(chi),
+            "delta": float(delta),
             "time_limit": int(time_limit),
         }
 
@@ -436,7 +679,7 @@ def main():
         if result.get("error"):
             st.error(result["error"])
 
-        tabs = st.tabs(["Figura", "Rotas", "Atendimento por hub", "Log"])
+        tabs = st.tabs(["Figura", "Rotas", "Atendimento por hub", "Aproximação contínua", "Log"])
 
         with tabs[0]:
             st.subheader("Dados da instância")
@@ -453,7 +696,7 @@ def main():
                     - **Distância máxima**: maior distância entre dois nós da instância.
 
                     Os valores de **fluxo** vêm diretamente do arquivo escolhido em
-                    `data/APdata`. Cada instância tem uma matriz de fluxos: o valor na
+                    `data/SPdata`. Cada instância tem uma matriz de fluxos: o valor na
                     linha `i` e coluna `j` representa quanto deve sair do nó `i` e
                     chegar ao nó `j`.
                     """
@@ -501,7 +744,7 @@ def main():
             st.subheader("Figura")
             image_path = result.get("image_path")
             if image_path and Path(image_path).exists():
-                st.image(str(image_path), use_container_width=True)
+                st.image(str(image_path), width=640)
             else:
                 st.warning("A figura será exibida quando uma solução viável for encontrada.")
 
@@ -562,6 +805,198 @@ def main():
                 st.info("Nenhum atendimento por hub disponível.")
 
         with tabs[3]:
+            # Aproximação contínua
+            st.subheader("Aproximação contínua — estimativas por região/hub")
+            st.markdown(
+                """
+                **Parâmetros da Aproximação Contínua**
+
+                - **Coeficiente CA (beta)**: ajusta a distância média interna de cada região; valores maiores aumentam a estimativa de rota dentro da região.
+                - **Custo por km**: custo operacional por quilômetro usado tanto na coleta quanto na entrega.
+                - **Área por nó (km²)**: área mínima atribuída a cada nó para evitar regiões com área zero ou muito pequena.
+                - **Custo inter-hub por km**: custo adicional de transporte entre hubs no trecho inter-hub.
+                - **Fator de desconto inter-hub (alpha)**: reduz o custo inter-hub para refletir economias de escala ou transporte mais eficiente entre hubs.
+                - **Fixed regions**: usa centróides pré-computados de regiões de SP para mapear nós de forma fixa em vez de usar apenas Voronoi.
+                """
+            )
+
+            # determine hub seeds selection for CA
+            ca_hub_choice = None
+            if ca_method.startswith("Voronoi (hubs selecionados)"):
+                ca_hub_choice = st.multiselect(
+                    "Selecione hubs (índices)",
+                    options=insights["nodes"],
+                    default=insights["nodes"][:max(1, insights["p"] )],
+                )
+                ca_hub_choice = [int(x) for x in ca_hub_choice]
+                if len(ca_hub_choice) == 0:
+                    st.info("Nenhum hub selecionado: será usado top-p por fluxo para a estimativa CA.")
+                    ca_hub_choice = None
+            elif ca_method.startswith("Fixed regions"):
+                # Load centroids file from the spatial model output and map to nearest nodes
+                try:
+                    import json
+
+                    centroids_path = ROOT_DIR / "sp_spatial_gravity_model" / "output" / "centroides_populacionais_sp.json"
+                    if centroids_path.exists():
+                        with open(centroids_path, "r", encoding="utf-8") as f:
+                            centroids = json.load(f)
+                        ca_hub_choice = _nearest_nodes_to_centroids(insights["nodes"], insights["coords"], centroids)
+                        if not ca_hub_choice:
+                            st.info("Não foi possível mapear centroids para nós: será usado top-p por fluxo.")
+                            ca_hub_choice = None
+                    else:
+                        st.info("Arquivo de centroides não encontrado: será usado top-p por fluxo.")
+                        ca_hub_choice = None
+                except Exception as e:
+                    st.info(f"Erro ao carregar centroides: {e}")
+                    ca_hub_choice = None
+            else:
+                ca_hub_choice = None
+
+            # Run estimation
+            try:
+                ca_results = estimate_ca_compat(
+                    nodes=insights["nodes"],
+                    coords=insights["coords"],
+                    flow=insights["flow"],
+                    distance=insights["distance"],
+                    hub_indices=ca_hub_choice,
+                    p=int(override_p),
+                    Q_col=float(ca_Q),
+                    rho_col=float(ca_rho),
+                    beta_col=float(ca_beta),
+                    Q_ent=float(ca_Q),
+                    rho_ent=float(ca_rho),
+                    beta_ent=float(ca_beta),
+                    area_per_node=float(ca_area_per_node),
+                    cost_per_km_col=float(ca_cost_per_km),
+                    cost_per_km_ent=float(ca_cost_per_km),
+                    c_hub=float(ca_c_hub),
+                    alpha=float(ca_alpha),
+                )
+            except Exception as e:
+                st.error(f"Erro ao estimar CA: {e}")
+                ca_results = {}
+
+            if isinstance(ca_results, dict):
+                regions = ca_results.get("regions", ca_results)
+                if not isinstance(regions, dict):
+                    regions = {}
+
+                if not regions:
+                    st.warning("CA retornou um conjunto de regiões vazio ou em formato não reconhecido.")
+                elif "regions" not in ca_results:
+                    st.warning("Usando formato CA legado; os dados poderão estar incompletos.")
+
+                region_rows = []
+                for hub, data in sorted(regions.items()):
+                    region_rows.append({
+                        "hub": hub,
+                        "area": data.get("area", 0.0),
+                        "out_volume": data.get("out_volume", 0.0),
+                        "in_volume": data.get("in_volume", 0.0),
+                        "n_stops_col": data.get("n_stops_col", 0.0),
+                        "n_stops_ent": data.get("n_stops_ent", 0.0),
+                        "m_col": data.get("m_col", 0),
+                        "m_ent": data.get("m_ent", 0),
+                        "R_col": data.get("R_col", 0),
+                        "R_ent": data.get("R_ent", 0),
+                        "N_col": data.get("N_col", 0.0),
+                        "N_ent": data.get("N_ent", 0.0),
+                        "L_col": data.get("L_col", 0.0),
+                        "L_ent": data.get("L_ent", 0.0),
+                        "C_unit_col": data.get("C_unit_col", 0.0),
+                        "C_unit_ent": data.get("C_unit_ent", 0.0),
+                        "avg_interhub_cost": data.get("avg_interhub_cost", 0.0),
+                    })
+
+                if region_rows:
+                    st.dataframe(
+                        format_rows(
+                            region_rows,
+                            [
+                                "area",
+                                "out_volume",
+                                "in_volume",
+                                "n_stops_col",
+                                "n_stops_ent",
+                                "m_col",
+                                "m_ent",
+                                "R_col",
+                                "R_ent",
+                                "N_col",
+                                "N_ent",
+                                "L_col",
+                                "L_ent",
+                                "C_unit_col",
+                                "C_unit_ent",
+                                "avg_interhub_cost",
+                            ],
+                        ),
+                        use_container_width=True,
+                    )
+                else:
+                    st.info("Nenhuma região CA disponível para exibição.")
+
+                C_col = ca_results.get("C_col") if isinstance(ca_results.get("C_col"), dict) else {}
+                C_ent = ca_results.get("C_ent") if isinstance(ca_results.get("C_ent"), dict) else {}
+                C_hub = ca_results.get("C_hub") if isinstance(ca_results.get("C_hub"), dict) else {}
+
+                if C_col or C_ent or C_hub:
+                    def matrix_stats(matrix):
+                        values = [v for row in matrix.values() for v in row.values()]
+                        return {
+                            "min": min(values) if values else 0.0,
+                            "max": max(values) if values else 0.0,
+                            "mean": sum(values) / max(len(values), 1),
+                        }
+
+                    col_stats = matrix_stats(C_col)
+                    ent_stats = matrix_stats(C_ent)
+                    hub_stats = matrix_stats(C_hub)
+
+                    st.markdown("### Sumário das matrizes de custo")
+                    summary_table = [
+                        {"matriz": "Coleta", "mín": col_stats["min"], "máx": col_stats["max"], "média": col_stats["mean"]},
+                        {"matriz": "Entrega", "mín": ent_stats["min"], "máx": ent_stats["max"], "média": ent_stats["mean"]},
+                        {"matriz": "Inter-hub", "mín": hub_stats["min"], "máx": hub_stats["max"], "média": hub_stats["mean"]},
+                    ]
+                    st.dataframe(
+                        format_rows(summary_table, ["mín", "máx", "média"]),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+                    st.markdown("### Matrizes completas de custos")
+                    st.write("C_col (região × hub)")
+                    st.dataframe(
+                        {i: {k: format_br(v) for k, v in row.items()} for i, row in C_col.items()},
+                        use_container_width=True,
+                    )
+                    st.write("C_ent (hub × região de destino)")
+                    st.dataframe(
+                        {m: {j: format_br(v) for j, v in row.items()} for m, row in C_ent.items()},
+                        use_container_width=True,
+                    )
+                    st.write("C_hub (hub × hub)")
+                    st.dataframe(
+                        {k: {m: format_br(v) for m, v in row.items()} for k, row in C_hub.items()},
+                        use_container_width=True,
+                    )
+                else:
+                    if region_rows:
+                        st.info("Matrizes CA não foram retornadas no formato esperado. Exibindo apenas dados por região.")
+                    else:
+                        st.info("Nenhuma matriz CA disponível para exibição.")
+
+                if not region_rows and not (C_col or C_ent or C_hub):
+                    st.write("Retorno CA cru:")
+                    st.json(ca_results)
+            else:
+                st.info("Nenhum dado de CA disponível ou a estimativa CA retornou um formato inesperado.")
+
+        with tabs[4]:
             st.code(result.get("log") or "Nenhuma saída registrada.", language="text")
 
 
