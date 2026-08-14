@@ -223,7 +223,9 @@ def run_model(model_name, instance, n_limit, override_p, c_hub, alpha, time_limi
             c_hub=c_hub,
             alpha=alpha,
         )
-        nodes, coords, flow, p = data["nodes"], data["coords"], data["flow"], data["p"]
+        nodes, coords, flow, distance, p = (
+            data["nodes"], data["coords"], data["flow"], data["distance"], data["p"]
+        )
 
         solver = SOLVERS[model_name]
 
@@ -231,6 +233,7 @@ def run_model(model_name, instance, n_limit, override_p, c_hub, alpha, time_limi
             model, selected_hubs, selected_routes = solver(
                 nodes=nodes,
                 flow=flow,
+                distance=distance,
                 c_col=data["c_col"],
                 c_ent=data["c_ent"],
                 c_hub=data["c_hub"],
@@ -436,8 +439,18 @@ def main():
                 time_limit=int(time_limit),
             )
         st.session_state["last_result"] = result
+        st.session_state["last_config"] = {
+            "model_name": model_name,
+            "instance": selected_instance["name"],
+            "n_limit": int(n_limit),
+            "override_p": int(override_p),
+            "c_hub": float(ca_c_hub),
+            "alpha": float(ca_alpha),
+            "time_limit": int(time_limit),
+        }
 
     result = st.session_state.get("last_result")
+    last_config = st.session_state.get("last_config")
 
     with result_placeholder:
         if not result:
@@ -641,12 +654,39 @@ def main():
                 }
 
             ca_results = {
+                "regions": {},
                 "C_col": nested_matrix(insights["c_col"]),
                 "C_ent": nested_matrix(insights["c_ent"]),
                 "C_hub": nested_matrix(insights["c_hub"]),
             }
 
             if isinstance(ca_results, dict):
+                regions = ca_results.get("regions", ca_results)
+                if not isinstance(regions, dict):
+                    regions = {}
+
+                region_rows = []
+                for hub, data in sorted(regions.items()):
+                    region_rows.append({
+                        "hub": hub,
+                        "area": data.get("area", 0.0),
+                        "out_volume": data.get("out_volume", 0.0),
+                        "in_volume": data.get("in_volume", 0.0),
+                        "n_stops_col": data.get("n_stops_col", 0.0),
+                        "n_stops_ent": data.get("n_stops_ent", 0.0),
+                        "m_col": data.get("m_col", 0),
+                        "m_ent": data.get("m_ent", 0),
+                        "R_col": data.get("R_col", 0),
+                        "R_ent": data.get("R_ent", 0),
+                        "N_col": data.get("N_col", 0.0),
+                        "N_ent": data.get("N_ent", 0.0),
+                        "L_col": data.get("L_col", 0.0),
+                        "L_ent": data.get("L_ent", 0.0),
+                        "C_unit_col": data.get("C_unit_col", 0.0),
+                        "C_unit_ent": data.get("C_unit_ent", 0.0),
+                        "avg_interhub_cost": data.get("avg_interhub_cost", 0.0),
+                    })
+
                 C_col = ca_results.get("C_col") if isinstance(ca_results.get("C_col"), dict) else {}
                 C_ent = ca_results.get("C_ent") if isinstance(ca_results.get("C_ent"), dict) else {}
                 C_hub = ca_results.get("C_hub") if isinstance(ca_results.get("C_hub"), dict) else {}
@@ -743,9 +783,12 @@ def main():
                         use_container_width=True,
                     )
                 else:
-                    st.info("Nenhuma matriz CA disponível para exibição.")
+                    if region_rows:
+                        st.info("Matrizes CA não foram retornadas no formato esperado. Exibindo apenas dados por região.")
+                    else:
+                        st.info("Nenhuma matriz CA disponível para exibição.")
 
-                if not (C_col or C_ent or C_hub):
+                if not region_rows and not (C_col or C_ent or C_hub):
                     st.write("Retorno CA cru:")
                     st.json(ca_results)
             else:

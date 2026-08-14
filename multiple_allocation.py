@@ -48,6 +48,7 @@ from utilidades import ExecutionTimeLimitReached, write_execution_log
 def _solve_multiple_allocation_p_hub(
     nodes,
     flow,
+    distance,
     c_col,
     c_ent,
     c_hub,

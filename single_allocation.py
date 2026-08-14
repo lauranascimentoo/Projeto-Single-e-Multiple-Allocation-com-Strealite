@@ -37,6 +37,7 @@ def aggregated_pair_cost(i, j, k, m, flow, c_col, c_ent, c_hub):
 def _solve_single_allocation_p_hub(
     nodes,
     flow,
+    distance,
     c_col,
     c_ent,
     c_hub,
