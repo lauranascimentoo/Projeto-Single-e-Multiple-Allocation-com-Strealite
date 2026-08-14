@@ -10,74 +10,93 @@ from matplotlib.colors import LinearSegmentedColormap, Normalize
 from matplotlib.lines import Line2D
 
 
-def load_ap_instance(file_path, n_limit=None, override_p=None):
-    with open(file_path, "r") as file:
-        tokens = file.read().split()
+def _haversine_km(first, second):
+    """Distancia geodesica em km entre coordenadas (latitude, longitude)."""
+    lat1, lon1 = map(math.radians, first)
+    lat2, lon2 = map(math.radians, second)
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    value = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    return 6371.0 * 2 * math.atan2(math.sqrt(value), math.sqrt(1 - value))
 
-    idx = 0
-    original_n = int(tokens[idx])
-    idx += 1
+
+def load_sp_instance(file_path, n_limit=None, override_p=None, c_hub=1.0, alpha=0.75):
+    """Le a instancia SP: coordenadas, demanda, custos CA e parametros nomeados."""
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = [line.strip() for line in file if line.strip()]
+
+    original_n = int(lines[0])
+    cursor = 1
     original_nodes = list(range(1, original_n + 1))
     original_coords = {}
 
-    for i in original_nodes:
-        x_coord = float(tokens[idx])
-        y_coord = float(tokens[idx + 1])
-        idx += 2
-        original_coords[i] = (x_coord, y_coord)
+    for node in original_nodes:
+        lat, lon = map(float, lines[cursor].split())
+        original_coords[node] = (lat, lon)
+        cursor += 1
 
-    original_flow_matrix = {}
+    def read_matrix():
+        nonlocal cursor
+        matrix = {}
+        for i in original_nodes:
+            values = [float(value) for value in lines[cursor].split()]
+            if len(values) != original_n:
+                raise ValueError(f"Matriz invalida na linha {cursor + 1}: esperados {original_n} valores.")
+            cursor += 1
+            for j, value in zip(original_nodes, values):
+                matrix[(i, j)] = value
+        return matrix
 
-    for i in original_nodes:
-        for j in original_nodes:
-            original_flow_matrix[(i, j)] = float(tokens[idx])
-            idx += 1
+    original_flow_matrix = read_matrix()
+    original_c_col = read_matrix()
+    original_c_ent = read_matrix()
 
-    original_p = int(tokens[idx])
-    idx += 1
+    params = {}
+    for line in lines[cursor:]:
+        parts = line.split()
+        if len(parts) != 2:
+            raise ValueError(f"Parametro invalido: {line}")
+        params[parts[0]] = float(parts[1])
 
-    params = []
-    while idx < len(tokens) and len(params) < 3:
-        try:
-            params.append(float(tokens[idx]))
-        except ValueError:
-            break
-        idx += 1
+    required = {
+        "gamma", "T", "rho_col", "Q_col", "beta_col", "c_col",
+        "rho_ent", "Q_ent", "beta_ent", "c_ent",
+    }
+    missing = sorted(required - params.keys())
+    if missing:
+        raise ValueError("Parametros ausentes na instancia: " + ", ".join(missing))
 
-    delta = params[0] if len(params) > 0 else 0.75
-    alpha = params[1] if len(params) > 1 else delta
-    chi = params[2] if len(params) > 2 else delta
-
-    if n_limit is None:
-        n = original_n
-    else:
-        n = min(n_limit, original_n)
-
+    n = original_n if n_limit is None else min(int(n_limit), original_n)
     nodes = list(range(1, n + 1))
     coords = {i: original_coords[i] for i in nodes}
-    flow = {}
+    flow = {
+        (i, j): original_flow_matrix[(i, j)]
+        for i in nodes for j in nodes
+        if i != j and original_flow_matrix[(i, j)] > 0
+    }
+    c_col_matrix = {(i, k): original_c_col[(i, k)] for i in nodes for k in nodes}
+    c_ent_matrix = {(k, j): original_c_ent[(k, j)] for k in nodes for j in nodes}
+    distance = {(i, j): _haversine_km(coords[i], coords[j]) for i in nodes for j in nodes}
+    c_hub_matrix = {
+        (k, m): (0.0 if k == m else float(alpha) * float(c_hub) * distance[(k, m)])
+        for k in nodes for m in nodes
+    }
 
-    for i in nodes:
-        for j in nodes:
-            value = original_flow_matrix[(i, j)]
-
-            if i != j and value > 0:
-                flow[(i, j)] = value
-
-    if override_p is not None:
-        p = override_p
-    else:
-        p = min(original_p, n)
-
-    distance = {}
-
-    for i in nodes:
-        for j in nodes:
-            xi, yi = coords[i]
-            xj, yj = coords[j]
-            distance[(i, j)] = math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2)
-
-    return nodes, coords, flow, distance, p, alpha, chi, delta
+    p = min(int(override_p) if override_p is not None else 5, n)
+    return {
+        "nodes": nodes,
+        "coords": coords,
+        "flow": flow,
+        "distance": distance,
+        "p": p,
+        "c_col": c_col_matrix,
+        "c_ent": c_ent_matrix,
+        "c_hub": c_hub_matrix,
+        "params": params,
+        "c_hub_per_km": float(c_hub),
+        "alpha": float(alpha),
+        "original_n": original_n,
+    }
 
 
 def write_execution_log(log_path, instance_path, nodes, flow, p, event, elapsed=None, detail=None):

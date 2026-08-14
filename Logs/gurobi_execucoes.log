@@ -105,3 +105,11 @@
 2026-07-28 15:06:49 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/11.5 | nos=11 | hubs=5 | fluxos=110 | tempo_total_s=1.422 | status=2;tempo_gurobi_s=0.866;objetivo=97.440743;hubs_escolhidos=[1, 2, 4, 7, 11]
 2026-07-28 15:21:33 | evento=INICIO_MULTIPLE | instancia=data/SPdata/11.5 | nos=11 | hubs=5 | fluxos=110 | variaveis_rota_estimadas=13310;limite_tempo_s=300
 2026-07-28 15:21:34 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/11.5 | nos=11 | hubs=5 | fluxos=110 | tempo_total_s=1.348 | status=2;tempo_gurobi_s=0.471;objetivo=108.379697;hubs_escolhidos=[1, 2, 3, 5, 7]
+2026-08-14 09:13:34 | evento=INICIO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=11 | hubs=5 | fluxos=110 | variaveis_rota_estimadas=13310;limite_tempo_s=300
+2026-08-14 09:13:36 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=11 | hubs=5 | fluxos=110 | tempo_total_s=1.781 | status=2;tempo_gurobi_s=0.353;objetivo=1162180.296041;hubs_escolhidos=[1, 2, 7, 8, 11]
+2026-08-14 09:20:13 | evento=INICIO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=11 | hubs=5 | fluxos=110 | variaveis_rota_estimadas=13310;limite_tempo_s=300
+2026-08-14 09:20:13 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=11 | hubs=5 | fluxos=110 | tempo_total_s=0.558 | status=2;tempo_gurobi_s=0.224;objetivo=1162180.296041;hubs_escolhidos=[1, 2, 7, 8, 11]
+2026-08-14 09:24:47 | evento=INICIO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=10 | hubs=4 | fluxos=90 | variaveis_rota_estimadas=9000;limite_tempo_s=300
+2026-08-14 09:24:47 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=10 | hubs=4 | fluxos=90 | tempo_total_s=0.452 | status=2;tempo_gurobi_s=0.184;objetivo=1138821.089182;hubs_escolhidos=[1, 2, 7, 8]
+2026-08-14 09:25:05 | evento=INICIO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=10 | hubs=3 | fluxos=90 | variaveis_rota_estimadas=9000;limite_tempo_s=300
+2026-08-14 09:25:06 | evento=SOLUCAO_MULTIPLE | instancia=data/SPdata/sp11_instancia_completa.txt | nos=10 | hubs=3 | fluxos=90 | tempo_total_s=0.496 | status=2;tempo_gurobi_s=0.219;objetivo=1145675.789436;hubs_escolhidos=[1, 2, 8]

@@ -7,11 +7,10 @@ Conjuntos:
 
 Parametros:
     w_ij = fluxo de i para j.
-    d_ab = distancia entre os nos a e b.
+    C_col_ik = custo unitario de coleta da origem i pelo hub k.
+    C_hub_km = custo unitario de transferencia entre os hubs k e m.
+    C_ent_mj = custo unitario de entrega do hub m ao destino j.
     p = quantidade de hubs a abrir.
-    chi = custo de coleta origem -> primeiro hub.
-    alpha = custo de transferencia hub -> hub.
-    delta = custo de distribuicao segundo hub -> destino.
 
 Variaveis:
     z_k = 1 se o no k e escolhido como hub.
@@ -19,7 +18,7 @@ Variaveis:
 
 Funcao objetivo:
     min soma_{i,j,k,m} w_ij *
-        (chi*d_ik + alpha*d_km + delta*d_mj) * x_ijkm
+        (C_col_ik + C_hub_km + C_ent_mj) * x_ijkm
 
 Restricoes:
     1. soma_k z_k = p
@@ -49,11 +48,10 @@ from utilidades import ExecutionTimeLimitReached, write_execution_log
 def _solve_multiple_allocation_p_hub(
     nodes,
     flow,
-    distance,
+    c_col,
+    c_ent,
+    c_hub,
     p,
-    alpha,
-    chi,
-    delta,
     instance_path,
     time_limit=300,
     execution_log_path="Logs/gurobi_execucoes.log",
@@ -174,11 +172,10 @@ def _solve_multiple_allocation_p_hub(
         coefficient = (
             flow[(i, j)]
             * (
-                chi * distance[(i, k)]
-                + alpha * distance[(k, m)]
-                + delta * distance[(m, j)]
+                c_col[(i, k)]
+                + c_hub[(k, m)]
+                + c_ent[(m, j)]
             )
-            / 1000
         )
         objective.addTerms(coefficient, variable)
 

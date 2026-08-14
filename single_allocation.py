@@ -17,32 +17,30 @@ from gurobipy import GRB
 from utilidades import ExecutionTimeLimitReached, write_execution_log
 
 
-def route_cost(flow_value, origin, destination, first_hub, second_hub, distance, alpha, chi, delta):
+def route_cost(flow_value, origin, destination, first_hub, second_hub, c_col, c_ent, c_hub):
     return (
         flow_value
         * (
-            chi * distance[(origin, first_hub)]
-            + alpha * distance[(first_hub, second_hub)]
-            + delta * distance[(second_hub, destination)]
+            c_col[(origin, first_hub)]
+            + c_hub[(first_hub, second_hub)]
+            + c_ent[(second_hub, destination)]
         )
-        / 1000
     )
 
 
-def aggregated_pair_cost(i, j, k, m, flow, distance, alpha, chi, delta):
-    forward = route_cost(flow.get((i, j), 0), i, j, k, m, distance, alpha, chi, delta)
-    backward = route_cost(flow.get((j, i), 0), j, i, m, k, distance, alpha, chi, delta)
+def aggregated_pair_cost(i, j, k, m, flow, c_col, c_ent, c_hub):
+    forward = route_cost(flow.get((i, j), 0), i, j, k, m, c_col, c_ent, c_hub)
+    backward = route_cost(flow.get((j, i), 0), j, i, m, k, c_col, c_ent, c_hub)
     return forward + backward
 
 
 def _solve_single_allocation_p_hub(
     nodes,
     flow,
-    distance,
+    c_col,
+    c_ent,
+    c_hub,
     p,
-    alpha,
-    chi,
-    delta,
     instance_path,
     time_limit=300,
     execution_log_path="Logs/gurobi_execucoes.log",
@@ -136,7 +134,7 @@ def _solve_single_allocation_p_hub(
             for k in nodes:
                 values = []
                 for m in nodes:
-                    cost = aggregated_pair_cost(i, j, k, m, flow, distance, alpha, chi, delta)
+                    cost = aggregated_pair_cost(i, j, k, m, flow, c_col, c_ent, c_hub)
                     pair_cost[(i, j, k, m)] = cost
                     values.append(cost)
 

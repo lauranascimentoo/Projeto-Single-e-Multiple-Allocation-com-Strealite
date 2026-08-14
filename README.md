@@ -1,28 +1,32 @@
-# AP Hub Location - Streamlit
+# SP Hub Location - Streamlit
 
-Interface Streamlit para executar a ferramenta AP Hub Location.
+Interface Streamlit para resolver o problema de localização de hubs com a
+instância de São Paulo.
 
-Esta pasta contem o minimo necessario para funcionar: app, modelos, utilidades e
-instancias AP.
+## Instância
+
+A aplicação lê os arquivos de `data/SPdata`. O formato atual contém:
+
+- quantidade e coordenadas dos nós;
+- matriz de demanda;
+- matrizes de custo de coleta e entrega;
+- parâmetros de demanda, coleta e entrega.
+
+O custo inter-hub é calculado pela aplicação a partir de `c_hub`, `alpha` e da
+distância geográfica entre os nós.
 
 ## Como executar
 
-Entre na pasta:
+Na raiz do projeto, instale as dependências:
 
 ```powershell
-cd "C:\Users\laura\OneDrive\Área de Trabalho\IC - Luiza\New Project"
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Rode usando o ambiente virtual da pasta anterior:
+Inicie a interface:
 
 ```powershell
-..\.venv\Scripts\python.exe -m streamlit run app_streamlit.py
+.\.venv\Scripts\python.exe -m streamlit run app_streamlit.py
 ```
 
-Se o ambiente virtual estiver ativado:
-
-```powershell
-streamlit run app_streamlit.py
-```
-
-A pagina usa as instancias em `data/APdata` e salva as figuras em `outputs`.
+A aplicação salva figuras em `outputs` e registros de execução em `Logs`.
