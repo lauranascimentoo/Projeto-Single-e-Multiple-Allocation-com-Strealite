@@ -522,74 +522,6 @@ def main():
     estimates = estimate_size(model_name, int(n_limit))
     insights = instance_insights(selected_instance, int(n_limit), int(override_p))
 
-    with st.sidebar:
-        st.markdown("**Custos estimados pela CA**")
-        ca_cost_summary = {}
-        try:
-            hub_idxs_for_preview = None
-            if ca_method.startswith("Fixed regions"):
-                try:
-                    import json
-
-                    centroids_path = ROOT_DIR / "sp_spatial_gravity_model" / "output" / "centroides_populacionais_sp.json"
-                    if centroids_path.exists():
-                        with open(centroids_path, "r", encoding="utf-8") as f:
-                            centroids = json.load(f)
-                        hub_idxs_for_preview = _nearest_nodes_to_centroids(insights["nodes"], insights["coords"], centroids)
-                        if not hub_idxs_for_preview:
-                            hub_idxs_for_preview = None
-                except Exception:
-                    hub_idxs_for_preview = None
-
-            ca_preview = estimate_ca_compat(
-                nodes=insights["nodes"],
-                coords=insights["coords"],
-                flow=insights["flow"],
-                distance=insights["distance"],
-                hub_indices=hub_idxs_for_preview,
-                p=int(override_p),
-                Q_col=float(ca_Q),
-                rho_col=float(ca_rho),
-                beta_col=float(ca_beta),
-                Q_ent=float(ca_Q),
-                rho_ent=float(ca_rho),
-                beta_ent=float(ca_beta),
-                area_per_node=float(ca_area_per_node),
-                cost_per_km_col=float(ca_cost_per_km),
-                cost_per_km_ent=float(ca_cost_per_km),
-                c_hub=float(ca_c_hub),
-                alpha=float(ca_alpha),
-            )
-            if isinstance(ca_preview, dict) and "C_col" in ca_preview:
-                C_col = ca_preview.get("C_col", {})
-                C_ent = ca_preview.get("C_ent", {})
-                C_hub = ca_preview.get("C_hub", {})
-                all_col = [value for row in C_col.values() for value in row.values()]
-                all_ent = [value for row in C_ent.values() for value in row.values()]
-                all_hub = [value for row in C_hub.values() for value in row.values()]
-                ca_cost_summary = {
-                    "collection_min": min(all_col, default=0.0),
-                    "collection_max": max(all_col, default=0.0),
-                    "collection_mean": sum(all_col) / max(len(all_col), 1),
-                    "delivery_min": min(all_ent, default=0.0),
-                    "delivery_max": max(all_ent, default=0.0),
-                    "delivery_mean": sum(all_ent) / max(len(all_ent), 1),
-                    "interhub_min": min(all_hub, default=0.0),
-                    "interhub_max": max(all_hub, default=0.0),
-                    "interhub_mean": sum(all_hub) / max(len(all_hub), 1),
-                }
-            else:
-                ca_cost_summary = {}
-        except Exception:
-            ca_cost_summary = {}
-
-        if ca_cost_summary:
-            cost_columns = st.columns(4)
-            cost_columns[0].metric("Coleta min", format_br(ca_cost_summary["collection_min"]))
-            cost_columns[1].metric("Coleta max", format_br(ca_cost_summary["collection_max"]))
-            cost_columns[2].metric("Coleta média", format_br(ca_cost_summary["collection_mean"]))
-            cost_columns[3].metric("Entrega média", format_br(ca_cost_summary["delivery_mean"]))
-
     metric_columns = st.columns(3)
     metric_columns[0].metric("Fluxos", format_int_br(estimates["flows"]))
     metric_columns[1].metric("Variáveis estimadas", format_int_br(estimates["variables"]))
@@ -807,18 +739,7 @@ def main():
         with tabs[3]:
             # Aproximação contínua
             st.subheader("Aproximação contínua — estimativas por região/hub")
-            st.markdown(
-                """
-                **Parâmetros da Aproximação Contínua**
 
-                - **Coeficiente CA (beta)**: ajusta a distância média interna de cada região; valores maiores aumentam a estimativa de rota dentro da região.
-                - **Custo por km**: custo operacional por quilômetro usado tanto na coleta quanto na entrega.
-                - **Área por nó (km²)**: área mínima atribuída a cada nó para evitar regiões com área zero ou muito pequena.
-                - **Custo inter-hub por km**: custo adicional de transporte entre hubs no trecho inter-hub.
-                - **Fator de desconto inter-hub (alpha)**: reduz o custo inter-hub para refletir economias de escala ou transporte mais eficiente entre hubs.
-                - **Fixed regions**: usa centróides pré-computados de regiões de SP para mapear nós de forma fixa em vez de usar apenas Voronoi.
-                """
-            )
 
             # determine hub seeds selection for CA
             ca_hub_choice = None
@@ -911,62 +832,84 @@ def main():
                         "avg_interhub_cost": data.get("avg_interhub_cost", 0.0),
                     })
 
-                if region_rows:
-                    st.dataframe(
-                        format_rows(
-                            region_rows,
-                            [
-                                "area",
-                                "out_volume",
-                                "in_volume",
-                                "n_stops_col",
-                                "n_stops_ent",
-                                "m_col",
-                                "m_ent",
-                                "R_col",
-                                "R_ent",
-                                "N_col",
-                                "N_ent",
-                                "L_col",
-                                "L_ent",
-                                "C_unit_col",
-                                "C_unit_ent",
-                                "avg_interhub_cost",
-                            ],
-                        ),
-                        use_container_width=True,
-                    )
-                else:
-                    st.info("Nenhuma região CA disponível para exibição.")
-
                 C_col = ca_results.get("C_col") if isinstance(ca_results.get("C_col"), dict) else {}
                 C_ent = ca_results.get("C_ent") if isinstance(ca_results.get("C_ent"), dict) else {}
                 C_hub = ca_results.get("C_hub") if isinstance(ca_results.get("C_hub"), dict) else {}
 
                 if C_col or C_ent or C_hub:
-                    def matrix_stats(matrix):
-                        values = [v for row in matrix.values() for v in row.values()]
-                        return {
-                            "min": min(values) if values else 0.0,
-                            "max": max(values) if values else 0.0,
-                            "mean": sum(values) / max(len(values), 1),
-                        }
+                    with st.expander("Sumário das matrizes de custo", expanded=False):
+                        st.markdown(
+                            """
+                            As matrizes calculam o custo de cada combinação possível entre regiões
+                            e hubs. As fórmulas são apresentadas separadamente abaixo.
+                            """
+                        )
 
-                    col_stats = matrix_stats(C_col)
-                    ent_stats = matrix_stats(C_ent)
-                    hub_stats = matrix_stats(C_hub)
+                        st.markdown(
+                            """
+                            **1. Coleta (`C_col`) — região → hub**
 
-                    st.markdown("### Sumário das matrizes de custo")
-                    summary_table = [
-                        {"matriz": "Coleta", "mín": col_stats["min"], "máx": col_stats["max"], "média": col_stats["mean"]},
-                        {"matriz": "Entrega", "mín": ent_stats["min"], "máx": ent_stats["max"], "média": ent_stats["mean"]},
-                        {"matriz": "Inter-hub", "mín": hub_stats["min"], "máx": hub_stats["max"], "média": hub_stats["mean"]},
-                    ]
-                    st.dataframe(
-                        format_rows(summary_table, ["mín", "máx", "média"]),
-                        use_container_width=True,
-                        hide_index=True,
-                    )
+                            Calcula o custo médio, por unidade de volume, para coletar em uma região
+                            usando um determinado hub.
+                            """
+                        )
+                        st.latex(
+                            r"C^{col}_{ik}="
+                            r"\frac{c_{col}\left(2d_{ik}R_i+\beta\sqrt{A_iN_i}\right)}{D_i}"
+                        )
+                        st.markdown(
+                            """
+                            O primeiro termo representa as viagens de ida e volta entre a região e
+                            o hub. O segundo estima o percurso realizado dentro da própria região.
+                            Depois, o custo total é dividido pelo volume coletado.
+                            """
+                        )
+
+                        st.markdown(
+                            """
+                            **2. Entrega (`C_ent`) — hub → região**
+
+                            Calcula o custo médio, por unidade de volume, para sair de um hub e fazer
+                            as entregas em uma região.
+                            """
+                        )
+                        st.latex(
+                            r"C^{ent}_{mj}="
+                            r"\frac{c_{ent}\left(2d_{mj}R_j+\beta\sqrt{A_jN_j}\right)}{D_j}"
+                        )
+                        st.markdown(
+                            """
+                            A lógica é a mesma da coleta: viagens de ida e volta entre hub e região,
+                            mais o percurso interno necessário para atender os pontos de entrega. O
+                            resultado é dividido pelo volume entregue.
+                            """
+                        )
+
+                        st.markdown(
+                            """
+                            **3. Transferência (`C_hub`) — hub → hub**
+
+                            Calcula o custo direto de transportar entre dois hubs.
+                            """
+                        )
+                        st.latex(r"C^{hub}_{km}=\alpha\,c_{hub}\,d_{km}")
+                        st.markdown(
+                            """
+                            O fator `alpha` aplica o desconto inter-hub. O custo é zero quando o hub
+                            de origem e o de destino são o mesmo.
+
+                            **Significado dos símbolos**
+
+                            - `d`: distância entre a região e o hub, ou entre dois hubs;
+                            - `R`: quantidade de rotas necessárias;
+                            - `A`: área estimada da região;
+                            - `N`: número estimado de paradas;
+                            - `D`: volume coletado ou entregue;
+                            - `beta`: coeficiente da aproximação contínua;
+                            - `c_col`, `c_ent` e `c_hub`: custos por quilômetro;
+                            - `alpha`: fator de desconto do transporte entre hubs.
+                            """
+                        )
 
                     st.markdown("### Matrizes completas de custos")
                     st.write("C_col (região × hub)")
