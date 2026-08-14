@@ -251,7 +251,7 @@ def run_model(model_name, instance, n_limit, override_p, c_hub, alpha, time_limi
                     selected_hubs=selected_hubs,
                     selected_routes=selected_routes,
                     output_path=str(image_path),
-                    title=f"Solução SP - alocação {model_name}",
+                    title="Solução SP - 11 regiões",
                 )
 
         objective = None
