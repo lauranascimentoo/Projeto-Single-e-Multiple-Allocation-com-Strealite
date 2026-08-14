@@ -562,7 +562,7 @@ def main():
             st.subheader("Figura")
             image_path = result.get("image_path")
             if image_path and Path(image_path).exists():
-                st.image(str(image_path), width=640)
+                st.image(str(image_path), use_container_width=True)
             else:
                 st.warning("A figura será exibida quando uma solução viável for encontrada.")
 

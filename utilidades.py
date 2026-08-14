@@ -1,8 +1,10 @@
 """Utilidades compartilhadas para instancias AP, logs e visualizacao."""
 
+import json
 import math
 import os
 from datetime import datetime
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 from matplotlib.cm import ScalarMappable
@@ -125,9 +127,118 @@ class ExecutionTimeLimitReached(Exception):
     pass
 
 
+def _plot_geojson_background(ax, geojson_path, facecolor="#eef3e8", edgecolor="#66745f"):
+    """Desenha poligonos GeoJSON usando longitude no eixo X e latitude no Y."""
+    if not geojson_path.exists():
+        return False
+
+    with open(geojson_path, "r", encoding="utf-8") as geojson_file:
+        features = json.load(geojson_file).get("features", [])
+
+    plotted = False
+    for feature in features:
+        geometry = feature.get("geometry") or {}
+        coordinates = geometry.get("coordinates", [])
+        geometry_type = geometry.get("type")
+        polygons = coordinates if geometry_type == "MultiPolygon" else [coordinates]
+
+        for polygon in polygons:
+            if not polygon:
+                continue
+            exterior = polygon[0]
+            longitudes = [point[0] for point in exterior]
+            latitudes = [point[1] for point in exterior]
+            ax.fill(
+                longitudes,
+                latitudes,
+                facecolor=facecolor,
+                edgecolor=edgecolor,
+                linewidth=1.2,
+                alpha=0.95,
+                zorder=0,
+            )
+            plotted = True
+
+    return plotted
+
+
+def _plot_intermediate_regions(ax, regions_dir):
+    """Desenha e identifica as 11 Regioes Geograficas Intermediarias de SP."""
+    region_names = {
+        3501: "São Paulo",
+        3502: "Sorocaba",
+        3503: "Bauru",
+        3504: "Marília",
+        3505: "Presidente\nPrudente",
+        3506: "Araçatuba",
+        3507: "São José do\nRio Preto",
+        3508: "Ribeirão Preto",
+        3509: "Araraquara",
+        3510: "Campinas",
+        3511: "São José dos\nCampos",
+    }
+    colors = [
+        "#b8dcc2", "#e7a6ea", "#e6a0a5", "#f4b5d5", "#91b9e6", "#c9e99d",
+        "#d8d88d", "#89d4d1", "#8ed9be", "#efbd87", "#aaa6df",
+    ]
+    plotted = False
+
+    for position, (region_code, region_name) in enumerate(region_names.items()):
+        region_path = regions_dir / f"{region_code}.geojson"
+        if not region_path.exists():
+            continue
+
+        with open(region_path, "r", encoding="utf-8") as region_file:
+            features = json.load(region_file).get("features", [])
+
+        points = []
+        for feature in features:
+            geometry = feature.get("geometry") or {}
+            coordinates = geometry.get("coordinates", [])
+            polygons = coordinates if geometry.get("type") == "MultiPolygon" else [coordinates]
+            for polygon in polygons:
+                if not polygon:
+                    continue
+                exterior = polygon[0]
+                points.extend(exterior)
+                ax.fill(
+                    [point[0] for point in exterior],
+                    [point[1] for point in exterior],
+                    facecolor=colors[position],
+                    edgecolor="#626b62",
+                    linewidth=1.0,
+                    alpha=0.62,
+                    zorder=0,
+                )
+                plotted = True
+
+        if points:
+            min_lon = min(point[0] for point in points)
+            max_lon = max(point[0] for point in points)
+            min_lat = min(point[1] for point in points)
+            max_lat = max(point[1] for point in points)
+            ax.text(
+                (min_lon + max_lon) / 2,
+                (min_lat + max_lat) / 2,
+                region_name,
+                ha="center",
+                va="center",
+                fontsize=7,
+                color="#3f493f",
+                alpha=0.88,
+                zorder=0.5,
+            )
+
+    return plotted
+
+
 def plot_solution(coords, flow, selected_hubs, selected_routes, output_path, title=None):
     """Plota a rede com hubs destacados e largura proporcional ao fluxo agregado."""
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(13, 8))
+    map_dir = Path(__file__).resolve().parent / "data" / "SPdata"
+    has_map = _plot_intermediate_regions(ax, map_dir / "regioes_intermediarias")
+    if not has_map:
+        has_map = _plot_geojson_background(ax, map_dir / "estado_sp.geojson")
     hub_set = set(selected_hubs)
     edge_flows = {}
 
@@ -143,44 +254,44 @@ def plot_solution(coords, flow, selected_hubs, selected_routes, output_path, tit
     max_flow = max(edge_flows.values(), default=1)
     flow_norm = Normalize(vmin=min_flow, vmax=max_flow)
     flow_cmap = LinearSegmentedColormap.from_list(
-        "fluxo_azul",
-        ["#d9e3ee", "#93abc1", "#486c8c", "#163a5b"],
+        "fluxo_contraste",
+        ["#64748b", "#475569", "#27364a", "#0f172a"],
     )
 
     for (a, b), edge_flow in edge_flows.items():
-        xa, ya = coords[a]
-        xb, yb = coords[b]
+        lat_a, lon_a = coords[a]
+        lat_b, lon_b = coords[b]
         scaled_flow = math.sqrt(edge_flow / max_flow)
         is_hub_link = a in hub_set and b in hub_set
 
         ax.plot(
-            [xa, xb],
-            [ya, yb],
+            [lon_a, lon_b],
+            [lat_a, lat_b],
             color=flow_cmap(flow_norm(edge_flow)),
-            linewidth=0.6 + 5.6 * scaled_flow,
-            alpha=0.9 if is_hub_link else 0.72,
+            linewidth=1.0 + 5.6 * scaled_flow,
+            alpha=0.95 if is_hub_link else 0.84,
             solid_capstyle="round",
             zorder=2 if is_hub_link else 1,
         )
 
-    for node, (x_coord, y_coord) in coords.items():
+    for node, (latitude, longitude) in coords.items():
         if node in hub_set:
             ax.scatter(
-                x_coord, y_coord, marker="o", s=250, color="#d62728",
+                longitude, latitude, marker="o", s=250, color="#d62728",
                 edgecolors="black", linewidths=1.2, zorder=4,
             )
             ax.annotate(
-                f"H{node}", (x_coord, y_coord), xytext=(0, 13),
+                f"H{node}", (longitude, latitude), xytext=(0, 13),
                 textcoords="offset points", ha="center", fontsize=10,
                 fontweight="bold", color="#8b0000", zorder=5,
             )
         else:
             ax.scatter(
-                x_coord, y_coord, marker="o", s=75, color="#2166f3",
+                longitude, latitude, marker="o", s=75, color="#2166f3",
                 edgecolors="white", linewidths=0.8, zorder=3,
             )
             ax.annotate(
-                str(node), (x_coord, y_coord), xytext=(5, 5),
+                str(node), (longitude, latitude), xytext=(5, 5),
                 textcoords="offset points", fontsize=8, color="#222222",
                 zorder=5,
             )
@@ -201,9 +312,11 @@ def plot_solution(coords, flow, selected_hubs, selected_routes, output_path, tit
     scalar_mappable.set_array([])
     colorbar = fig.colorbar(scalar_mappable, ax=ax, pad=0.02, fraction=0.045)
     colorbar.set_label("Fluxo agregado na conexao")
-    ax.set_title(title or "Solucao AP - Rede hub-and-spoke", fontsize=14, pad=12)
-    ax.set_xlabel("Coordenada X")
-    ax.set_ylabel("Coordenada Y")
+    ax.set_title(title or "Solucao SP - Rede hub-and-spoke", fontsize=14, pad=12)
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    if has_map:
+        ax.margins(x=0.02, y=0.03)
     ax.set_aspect("equal", adjustable="box")
     ax.grid(True, color="#e6e6e6", linewidth=0.8)
     ax.set_axisbelow(True)
