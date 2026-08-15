@@ -46,9 +46,10 @@ from utilidades import ExecutionTimeLimitReached, write_execution_log
 
 
 def _solve_multiple_allocation_p_hub(
+    type,
+    distance,
     nodes,
     flow,
-    distance,
     c_col,
     c_ent,
     c_hub,
@@ -169,15 +170,24 @@ def _solve_multiple_allocation_p_hub(
     for position, ((i, j, k, m), variable) in enumerate(x.items()):
         if position % 10000 == 0:
             remaining_time("construcao_objetivo")
-
-        coefficient = (
-            flow[(i, j)]
-            * (
-                c_col[(i, k)]
-                + c_hub[(k, m)]
-                + c_ent[(m, j)]
+        if type == "multiple_ca":
+            coefficient = (
+                flow[(i, j)]
+                * (
+                    distance[(i, k)]
+                    + c_hub[(k, m)]
+                    + distance[(m, j)]
+                )
             )
-        )
+        else:
+            coefficient = (
+                flow[(i, j)]
+                * (
+                    c_col[(i, k)]
+                    + c_hub[(k, m)]
+                    + c_ent[(m, j)]
+                )
+            )
         objective.addTerms(coefficient, variable)
 
     mdl.setObjective(objective, GRB.MINIMIZE)
