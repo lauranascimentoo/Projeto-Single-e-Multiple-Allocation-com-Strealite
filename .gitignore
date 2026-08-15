@@ -1,0 +1,25 @@
+# Outputs gerados pelo programa
+outputs/
+
+# Logs
+Logs/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Variáveis de ambiente / segredos
+.env
+.env.*
+
+# Configurações locais do VS Code
+.vscode/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
