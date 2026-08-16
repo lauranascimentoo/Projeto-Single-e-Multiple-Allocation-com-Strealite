@@ -42,7 +42,7 @@ import time
 import gurobipy as gp
 from gurobipy import GRB
 
-from utilidades import ExecutionTimeLimitReached, write_execution_log
+from utils.utilidades import ExecutionTimeLimitReached, write_execution_log
 
 
 def _solve_multiple_allocation_p_hub(

@@ -14,7 +14,7 @@ import time
 import gurobipy as gp
 from gurobipy import GRB
 
-from utilidades import ExecutionTimeLimitReached, write_execution_log
+from utils.utilidades import ExecutionTimeLimitReached, write_execution_log
 
 
 def route_cost(flow_value, origin, destination, first_hub, second_hub, c_col, c_ent, c_hub):

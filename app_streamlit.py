@@ -10,7 +10,7 @@ import streamlit as st
 
 from multiple_allocation import solve_multiple_allocation_p_hub
 from single_allocation import solve_single_allocation_p_hub
-from utilidades import load_sp_instance, plot_solution
+from utils.utilidades import load_sp_instance, plot_solution
 
 
 SOLVERS = {
