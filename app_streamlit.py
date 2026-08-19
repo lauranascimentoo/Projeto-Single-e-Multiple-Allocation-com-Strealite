@@ -14,13 +14,15 @@ DATA_DIR = ROOT_DIR / "data" / "SPdata"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 
 from multiple_allocation import solve_multiple_allocation_p_hub
+from multiple_allocation_normal import solve_multiple_allocation_normal
 from single_allocation import solve_single_allocation_p_hub
 from utilidades import load_sp_instance, plot_solution
 
 
 SOLVERS = {
     "single": solve_single_allocation_p_hub,
-    "multiple": solve_multiple_allocation_p_hub,
+    "multiple_ca": solve_multiple_allocation_p_hub,
+    "multiple_normal": solve_multiple_allocation_normal,
 }
 
 
@@ -205,7 +207,16 @@ def filter_routes(rows, origins, destinations, hubs):
     return sorted(filtered, key=lambda row: row["fluxo"], reverse=True)
 
 
-def run_model(model_name, instance, n_limit, override_p, c_hub, alpha, time_limit):
+def run_model(
+    model_name,
+    instance,
+    n_limit,
+    override_p,
+    c_hub,
+    ca_alpha,
+    normal_alpha,
+    time_limit,
+):
     os.environ["MPLBACKEND"] = "Agg"
     os.environ["SP_SKIP_PLOT_SHOW"] = "1"
     os.makedirs(OUTPUTS_DIR, exist_ok=True)
@@ -221,26 +232,33 @@ def run_model(model_name, instance, n_limit, override_p, c_hub, alpha, time_limi
             n_limit=n_limit,
             override_p=override_p,
             c_hub=c_hub,
-            alpha=alpha,
+            alpha=ca_alpha,
         )
         nodes, coords, flow, distance, p = (
             data["nodes"], data["coords"], data["flow"], data["distance"], data["p"]
         )
 
-        solver = SOLVERS[model_name]
-
         with contextlib.redirect_stdout(buffer), contextlib.redirect_stderr(buffer):
-            model, selected_hubs, selected_routes = solver(
-                nodes=nodes,
-                flow=flow,
-                distance=distance,
-                c_col=data["c_col"],
-                c_ent=data["c_ent"],
-                c_hub=data["c_hub"],
-                p=p,
-                instance_path=instance["relative_path"],
-                time_limit=time_limit,
-            )
+            common_args = {
+                "nodes": nodes,
+                "flow": flow,
+                "distance": distance,
+                "p": p,
+                "instance_path": instance["relative_path"],
+                "time_limit": time_limit,
+            }
+            if model_name == "multiple_ca":
+                model, selected_hubs, selected_routes = SOLVERS[model_name](
+                    **common_args,
+                    c_col=data["c_col"],
+                    c_ent=data["c_ent"],
+                    c_hub=data["c_hub"],
+                )
+            else:
+                model, selected_hubs, selected_routes = SOLVERS[model_name](
+                    **common_args,
+                    alpha=normal_alpha,
+                )
 
             image_path = None
             if selected_hubs:
@@ -348,10 +366,17 @@ def main():
 
         model_name = st.segmented_control(
             "Modelo",
-            options=["multiple"],
-            default="multiple",
-            format_func=lambda value: "Multiple Allocation",
+            options=["multiple_ca", "multiple_normal"],
+            default="multiple_ca",
+            format_func=lambda value: {
+                "multiple_ca": "Multiple com CA",
+                "multiple_normal": "Multiple normal",
+            }[value],
         )
+        if model_name == "multiple_ca":
+            st.caption("Custos de coleta e entrega pré-calculados pela aproximação contínua.")
+        else:
+            st.caption("Formulação tradicional baseada em distância, com Chi = Delta = 1 e Alpha ajustável.")
 
         selected_name = st.selectbox(
             "Instância",
@@ -381,17 +406,30 @@ def main():
             step=1,
         )
 
-        st.markdown("### Custo inter-hub")
-        hub_cost_col, alpha_col = st.columns(2)
-        with hub_cost_col:
-            ca_c_hub = st.number_input(
-                "c_hub (R$/km)", min_value=0.0, value=1.0, step=0.1, format="%.2f"
+        if model_name == "multiple_ca":
+            st.markdown("### Custo inter-hub — CA")
+            hub_cost_col, alpha_col = st.columns(2)
+            with hub_cost_col:
+                ca_c_hub = st.number_input(
+                    "c_hub (R$/km)", min_value=0.0, value=1.0, step=0.1, format="%.3f"
+                )
+            with alpha_col:
+                ca_alpha = st.number_input(
+                    "Alpha CA", min_value=0.0, max_value=1.0, value=0.75,
+                    step=0.01, format="%.2f",
+                )
+            st.caption("Usa C_col e C_ent da instância e calcula C_hub = alpha × c_hub × distância.")
+            normal_alpha = 0.75
+        else:
+            st.markdown("### Coeficientes do modelo normal")
+            normal_alpha = st.number_input(
+                "Alpha — inter-hub", min_value=0.0, value=0.75, step=0.01, format="%.2f"
             )
-        with alpha_col:
-            ca_alpha = st.number_input(
-                "Alpha", min_value=0.0, max_value=1.0, value=0.75, step=0.01, format="%.2f"
+            st.caption(
+                "Chi = 1 e Delta = 1 (fixos). Usa fluxo × "
+                "(d_ik + alpha·d_km + d_mj) / 1000."
             )
-        st.caption("C_hub[k,m] = alpha × c_hub × distância geográfica em km.")
+            ca_c_hub, ca_alpha = 1.0, 0.75
 
         time_limit = st.number_input(
             "Tempo limite (segundos)",
@@ -435,7 +473,8 @@ def main():
                 n_limit=int(n_limit),
                 override_p=int(override_p),
                 c_hub=float(ca_c_hub),
-                alpha=float(ca_alpha),
+                ca_alpha=float(ca_alpha),
+                normal_alpha=float(normal_alpha),
                 time_limit=int(time_limit),
             )
         st.session_state["last_result"] = result
@@ -624,6 +663,11 @@ def main():
 
         with tabs[3]:
             st.subheader("Aproximação contínua — dados da instância")
+            if model_name == "multiple_normal":
+                st.info(
+                    "Estas matrizes pertencem à instância, mas não entram na função objetivo "
+                    "do Multiple normal. Essa opção utiliza distâncias, Chi = Delta = 1 e Alpha ajustável."
+                )
             st.caption(
                 "Os custos de coleta e entrega abaixo já foram calculados pelo gerador da instância. "
                 "Somente o custo inter-hub é calculado nesta ferramenta."
