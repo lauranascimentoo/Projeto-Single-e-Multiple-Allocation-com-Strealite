@@ -1,10 +1,12 @@
 
 from turtle import st
 from app_streamlit import *
+from utils.construtor_fluxo_hub import build_hub_pair_flows, export_hub_pair_flows_csv
 
 
 def main():
     configure_page()
+
 
     st.title("SP Hub Location")
     st.caption("Execute o modelo Multiple Allocation com os custos pré-calculados da instância SP.")

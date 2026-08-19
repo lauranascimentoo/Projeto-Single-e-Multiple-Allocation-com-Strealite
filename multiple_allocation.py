@@ -41,9 +41,9 @@ import time
 
 import gurobipy as gp
 from gurobipy import GRB
-
+from configs.paths import* 
 from utils.utilidades import ExecutionTimeLimitReached, write_execution_log
-
+from utils.construtor_fluxo_hub import export_hub_pair_flows_csv
 
 def _solve_multiple_allocation_p_hub(
     type,
@@ -244,6 +244,14 @@ def _solve_multiple_allocation_p_hub(
     for (i, j), (k, m) in selected_routes.items():
         print(f"{i} -> {j}: {i} -> hub {k} -> hub {m} -> {j}")
 
+    export_hub_pair_flows_csv(
+        OUTPUTS_DIR/f"sp_solution_{type}_hub_pair_flows.csv",
+        selected_routes,
+        flow,
+        p,
+        c_hub, 
+        instance_name=None,
+    )
     return mdl, selected_hubs, selected_routes
 
 
