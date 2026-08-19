@@ -27,7 +27,7 @@ SOLVERS = {
 
 
 def read_instance_metadata(path):
-    data = load_sp_instance(path, c_hub=1.0, alpha=0.75)
+    data = load_sp_instance(path, c_hub=0.033, alpha=0.75)
     return {
         "name": path.name,
         "path": path,
@@ -105,7 +105,7 @@ def estimate_size(model_name, nodes):
     }
 
 
-def load_selected_instance(instance, n_limit, override_p, c_hub=1.0, alpha=0.75):
+def load_selected_instance(instance, n_limit, override_p, c_hub=0.033, alpha=0.75):
     return load_sp_instance(
         file_path=instance["relative_path"],
         n_limit=n_limit,
@@ -115,7 +115,7 @@ def load_selected_instance(instance, n_limit, override_p, c_hub=1.0, alpha=0.75)
     )
 
 
-def instance_insights(instance, n_limit, override_p, c_hub=1.0, alpha=0.75):
+def instance_insights(instance, n_limit, override_p, c_hub=0.033, alpha=0.75):
     data = load_selected_instance(instance, n_limit, override_p, c_hub, alpha)
     nodes = data["nodes"]
     coords = data["coords"]
@@ -411,7 +411,11 @@ def main():
             hub_cost_col, alpha_col = st.columns(2)
             with hub_cost_col:
                 ca_c_hub = st.number_input(
-                    "c_hub (R$/km)", min_value=0.0, value=1.0, step=0.1, format="%.3f"
+                    "c_hub (R$/pacote/km)",
+                    min_value=0.0,
+                    value=0.033,
+                    step=0.001,
+                    format="%.3f",
                 )
             with alpha_col:
                 ca_alpha = st.number_input(
@@ -429,7 +433,7 @@ def main():
                 "Chi = 1 e Delta = 1 (fixos). Usa fluxo × "
                 "(d_ik + alpha·d_km + d_mj) / 1000."
             )
-            ca_c_hub, ca_alpha = 1.0, 0.75
+            ca_c_hub, ca_alpha = 0.033, 0.75
 
         time_limit = st.number_input(
             "Tempo limite (segundos)",

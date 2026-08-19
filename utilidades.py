@@ -22,7 +22,7 @@ def _haversine_km(first, second):
     return 6371.0 * 2 * math.atan2(math.sqrt(value), math.sqrt(1 - value))
 
 
-def load_sp_instance(file_path, n_limit=None, override_p=None, c_hub=1.0, alpha=0.75):
+def load_sp_instance(file_path, n_limit=None, override_p=None, c_hub=0.033, alpha=0.75):
     """Le a instancia SP: coordenadas, demanda, custos CA e parametros nomeados."""
     with open(file_path, "r", encoding="utf-8") as file:
         lines = [line.strip() for line in file if line.strip()]
