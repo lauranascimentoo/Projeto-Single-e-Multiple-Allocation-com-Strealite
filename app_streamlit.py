@@ -18,6 +18,7 @@ from multiple_allocation_normal import solve_multiple_allocation_normal
 from single_allocation import solve_single_allocation_p_hub
 from utilidades import load_sp_instance, plot_solution
 
+C_HUB = 0.0001878125  # R$/pacote/km
 
 SOLVERS = {
     "single": solve_single_allocation_p_hub,
@@ -27,7 +28,7 @@ SOLVERS = {
 
 
 def read_instance_metadata(path):
-    data = load_sp_instance(path, c_hub=0.033, alpha=0.75)
+    data = load_sp_instance(path, c_hub=C_HUB, alpha=0.75)
     return {
         "name": path.name,
         "path": path,
@@ -105,7 +106,7 @@ def estimate_size(model_name, nodes):
     }
 
 
-def load_selected_instance(instance, n_limit, override_p, c_hub=0.033, alpha=0.75):
+def load_selected_instance(instance, n_limit, override_p, c_hub=C_HUB, alpha=0.75):
     return load_sp_instance(
         file_path=instance["relative_path"],
         n_limit=n_limit,
@@ -115,7 +116,7 @@ def load_selected_instance(instance, n_limit, override_p, c_hub=0.033, alpha=0.7
     )
 
 
-def instance_insights(instance, n_limit, override_p, c_hub=0.033, alpha=0.75):
+def instance_insights(instance, n_limit, override_p, c_hub=C_HUB, alpha=0.75):
     data = load_selected_instance(instance, n_limit, override_p, c_hub, alpha)
     nodes = data["nodes"]
     coords = data["coords"]
@@ -413,9 +414,9 @@ def main():
                 ca_c_hub = st.number_input(
                     "c_hub (R$/pacote/km)",
                     min_value=0.0,
-                    value=0.033,
+                    value=C_HUB,
                     step=0.001,
-                    format="%.3f",
+                    format="%.9f",
                 )
             with alpha_col:
                 ca_alpha = st.number_input(
@@ -433,7 +434,7 @@ def main():
                 "Chi = 1 e Delta = 1 (fixos). Usa fluxo × "
                 "(d_ik + alpha·d_km + d_mj) / 1000."
             )
-            ca_c_hub, ca_alpha = 0.033, 0.75
+            ca_c_hub, ca_alpha = C_HUB, 0.75
 
         time_limit = st.number_input(
             "Tempo limite (segundos)",

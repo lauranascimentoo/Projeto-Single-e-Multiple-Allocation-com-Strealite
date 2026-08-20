@@ -13,6 +13,10 @@ com CA para evitar duas implementacoes divergentes da mesma formulacao.
 
 from multiple_allocation import solve_multiple_allocation_p_hub
 
+C_COL = 0.027692308   # R$/pacote/km
+C_ENT = 0.027692308   # R$/pacote/km
+C_HUB = 0.0001878125  # R$/pacote/km
+
 
 def solve_multiple_allocation_normal(
     nodes,
@@ -26,17 +30,17 @@ def solve_multiple_allocation_normal(
 ):
     """Resolve o Multiple tradicional convertendo distancias em matrizes de custo."""
     c_col = {
-        (i, k): distance[(i, k)] #/ 1000
+        (i, k): C_COL * distance[(i, k)] #/ 1000
         for i in nodes
         for k in nodes
     }
     c_hub = {
-        (k, m): alpha * distance[(k, m)] #/ 1000
+        (k, m): C_HUB * alpha * distance[(k, m)] #/ 1000
         for k in nodes
         for m in nodes
     }
     c_ent = {
-        (m, j): distance[(m, j)] #/ 1000
+        (m, j): C_ENT * distance[(m, j)] #/ 1000
         for m in nodes
         for j in nodes
     }
