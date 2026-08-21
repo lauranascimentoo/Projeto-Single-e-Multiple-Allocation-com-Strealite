@@ -14,7 +14,12 @@ DATA_DIR = ROOT_DIR / "data" / "SPdata"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 
 from multiple_allocation import solve_multiple_allocation_p_hub
-from multiple_allocation_normal import solve_multiple_allocation_normal
+from multiple_allocation_normal import (
+    C_COL as NORMAL_C_COL,
+    C_ENT as NORMAL_C_ENT,
+    C_HUB as NORMAL_C_HUB,
+    solve_multiple_allocation_normal,
+)
 from single_allocation import solve_single_allocation_p_hub
 from utilidades import load_sp_instance, plot_solution
 
@@ -208,6 +213,130 @@ def filter_routes(rows, origins, destinations, hubs):
     return sorted(filtered, key=lambda row: row["fluxo"], reverse=True)
 
 
+def flow_arc_analysis(result, flow):
+    """Agrega os fluxos OD nos arcos usados e os separa por tipo de trecho."""
+    arc_flows = {}
+
+    for (origin, destination), (first_hub, second_hub) in result.get("selected_routes", {}).items():
+        flow_value = flow.get((origin, destination), 0)
+        segments = [
+            ("Coleta: spoke → hub", origin, first_hub),
+            ("Inter-hub: hub → hub", first_hub, second_hub),
+            ("Entrega: hub → spoke", second_hub, destination),
+        ]
+        for segment_type, start, end in segments:
+            if start == end:
+                continue
+            key = (segment_type, start, end)
+            arc_flows[key] = arc_flows.get(key, 0) + flow_value
+
+    rows = [
+        {"tipo": segment_type, "origem_arco": start, "destino_arco": end, "fluxo": value}
+        for (segment_type, start, end), value in arc_flows.items()
+    ]
+    rows.sort(key=lambda row: row["fluxo"], reverse=True)
+
+    summary = {}
+    for row in rows:
+        values = summary.setdefault(row["tipo"], {"fluxo_total": 0, "numero_arcos": 0, "maior_fluxo_arco": 0})
+        values["fluxo_total"] += row["fluxo"]
+        values["numero_arcos"] += 1
+        values["maior_fluxo_arco"] = max(values["maior_fluxo_arco"], row["fluxo"])
+
+    summary_rows = [
+        {
+            "tipo": segment_type,
+            **values,
+            "fluxo_medio_arco": values["fluxo_total"] / values["numero_arcos"],
+        }
+        for segment_type, values in summary.items()
+    ]
+    return rows, sorted(summary_rows, key=lambda row: row["fluxo_total"], reverse=True)
+
+
+def route_hub_usage_analysis(result, flow):
+    """Conta rotas e fluxos que usam um hub ou dois hubs distintos."""
+    groups = {
+        "Um hub": {"rotas": 0, "fluxo": 0},
+        "Dois hubs": {"rotas": 0, "fluxo": 0},
+    }
+    routes = result.get("selected_routes", {})
+    total_routes = len(routes)
+    total_flow = sum(flow.get(pair, 0) for pair in routes)
+
+    for pair, (first_hub, second_hub) in routes.items():
+        group = "Um hub" if first_hub == second_hub else "Dois hubs"
+        groups[group]["rotas"] += 1
+        groups[group]["fluxo"] += flow.get(pair, 0)
+
+    return [
+        {
+            "uso de hubs": group,
+            "quantidade de rotas": values["rotas"],
+            "percentual de rotas": values["rotas"] / total_routes if total_routes else 0,
+            "fluxo": values["fluxo"],
+            "percentual do fluxo": values["fluxo"] / total_flow if total_flow else 0,
+        }
+        for group, values in groups.items()
+    ]
+
+
+def route_hub_cost_analysis(result):
+    """Resume o custo das rotas conforme usem um ou dois hubs distintos."""
+    groups = {
+        "Um hub": {"rotas": 0, "fluxo": 0, "custo total": 0},
+        "Dois hubs": {"rotas": 0, "fluxo": 0, "custo total": 0},
+    }
+    for row in result.get("route_costs", []):
+        group = row["uso de hubs"]
+        groups[group]["rotas"] += 1
+        groups[group]["fluxo"] += row["fluxo"]
+        groups[group]["custo total"] += row["custo total"]
+
+    overall_cost = sum(values["custo total"] for values in groups.values())
+    return [
+        {
+            "uso de hubs": group,
+            **values,
+            "custo médio por rota": values["custo total"] / values["rotas"] if values["rotas"] else 0,
+            "custo por pacote": values["custo total"] / values["fluxo"] if values["fluxo"] else 0,
+            "percentual do custo": values["custo total"] / overall_cost if overall_cost else 0,
+        }
+        for group, values in groups.items()
+    ]
+
+
+def financial_segment_analysis(result):
+    """Resume os custos de coleta, inter-hub e entrega de uma solução."""
+    route_costs = result.get("route_costs", [])
+    total_flow = sum(row["fluxo"] for row in route_costs)
+    components = [
+        ("Coleta", "custo coleta", "pacotes coleta"),
+        ("Inter-hub", "custo inter-hub", "pacotes inter-hub"),
+        ("Entrega", "custo entrega", "pacotes entrega"),
+    ]
+    component_values = {
+        label: sum(row[field] for row in route_costs)
+        for label, field, _ in components
+    }
+    component_packages = {
+        label: sum(row.get(package_field, 0) for row in route_costs)
+        for label, _, package_field in components
+    }
+    total_cost = sum(component_values.values())
+    rows = [
+        {
+            "etapa": label,
+            "número de pacotes": component_packages[label],
+            "custo total": value,
+            "percentual do custo": value / total_cost if total_cost else 0,
+            "custo por pacote": value / component_packages[label] if component_packages[label] else 0,
+        }
+        for label, value in component_values.items()
+    ]
+    return rows, total_cost, total_flow
+
+
 def run_model(
     model_name,
     instance,
@@ -249,6 +378,7 @@ def run_model(
                 "time_limit": time_limit,
             }
             if model_name == "multiple_ca":
+                route_c_col, route_c_ent, route_c_hub = data["c_col"], data["c_ent"], data["c_hub"]
                 model, selected_hubs, selected_routes = SOLVERS[model_name](
                     **common_args,
                     c_col=data["c_col"],
@@ -256,6 +386,12 @@ def run_model(
                     c_hub=data["c_hub"],
                 )
             else:
+                route_c_col = {(i, k): NORMAL_C_COL * distance[(i, k)] for i in nodes for k in nodes}
+                route_c_hub = {
+                    (k, m): NORMAL_C_HUB * normal_alpha * distance[(k, m)]
+                    for k in nodes for m in nodes
+                }
+                route_c_ent = {(m, j): NORMAL_C_ENT * distance[(m, j)] for m in nodes for j in nodes}
                 model, selected_hubs, selected_routes = SOLVERS[model_name](
                     **common_args,
                     alpha=normal_alpha,
@@ -283,6 +419,26 @@ def run_model(
             if getattr(model, "SolCount", 0) > 0:
                 objective = getattr(model, "ObjVal", None)
 
+        route_costs = []
+        for (origin, destination), (first_hub, second_hub) in selected_routes.items():
+            flow_value = flow[(origin, destination)]
+            collection_cost = flow_value * route_c_col[(origin, first_hub)]
+            inter_hub_cost = flow_value * route_c_hub[(first_hub, second_hub)]
+            delivery_cost = flow_value * route_c_ent[(second_hub, destination)]
+            route_costs.append({
+                "origem": origin,
+                "destino": destination,
+                "uso de hubs": "Um hub" if first_hub == second_hub else "Dois hubs",
+                "fluxo": flow_value,
+                "pacotes coleta": flow_value if origin != first_hub else 0,
+                "pacotes inter-hub": flow_value if first_hub != second_hub else 0,
+                "pacotes entrega": flow_value if second_hub != destination else 0,
+                "custo coleta": collection_cost,
+                "custo inter-hub": inter_hub_cost,
+                "custo entrega": delivery_cost,
+                "custo total": collection_cost + inter_hub_cost + delivery_cost,
+            })
+
         return {
             "ok": bool(selected_hubs),
             "log": buffer.getvalue(),
@@ -294,6 +450,7 @@ def run_model(
             "num_constraints": getattr(model, "NumConstrs", None) if model is not None else None,
             "selected_hubs": selected_hubs,
             "selected_routes": selected_routes,
+            "route_costs": route_costs,
             "image_path": image_path,
             "elapsed": time.perf_counter() - started,
         }
@@ -492,6 +649,13 @@ def main():
             "alpha": float(ca_alpha),
             "time_limit": int(time_limit),
         }
+        comparison_key = (
+            selected_instance["name"], int(n_limit), int(override_p),
+        )
+        st.session_state.setdefault("model_results", {})[model_name] = {
+            "result": result,
+            "comparison_key": comparison_key,
+        }
 
     result = st.session_state.get("last_result")
     last_config = st.session_state.get("last_config")
@@ -541,7 +705,10 @@ def main():
         if result.get("error"):
             st.error(result["error"])
 
-        tabs = st.tabs(["Figura", "Rotas", "Atendimento por hub", "Aproximação contínua", "Log"])
+        tabs = st.tabs([
+            "Figura", "Rotas", "Análise de fluxos", "Análise financeira",
+            "Atendimento por hub", "Aproximação contínua", "Log",
+        ])
 
         with tabs[0]:
             st.subheader("Dados da instância")
@@ -631,6 +798,249 @@ def main():
                 st.info("Nenhuma rota disponível para esta execução.")
 
         with tabs[2]:
+            st.subheader("Fluxo agregado nos arcos da solução")
+            st.caption(
+                "A demanda entre cada par origem–destino é a mesma nos dois modelos. "
+                "Esta análise mostra onde ela passa depois que cada modelo escolhe seus hubs e rotas."
+            )
+            with st.expander("Detalhamento do cálculo dos fluxos"):
+                st.markdown(
+                    """
+                    1. A instância informa quantos pacotes precisam ir de cada origem para
+                       cada destino.
+                    2. O modelo escolhe o caminho desses pacotes. Um caminho pode ter:
+                       - **um hub:** origem → hub → destino;
+                       - **dois hubs:** origem → primeiro hub → segundo hub → destino.
+                    3. A ferramenta separa o caminho em **coleta**, **inter-hub** e **entrega**.
+                    4. Quando várias rotas usam a mesma ligação, seus pacotes são somados.
+
+                    **Exemplo:** se 800 pacotes seguem por `1 → 3 → 7 → 5`, são
+                    registrados 800 na coleta `1 → 3`, 800 no inter-hub `3 → 7` e
+                    800 na entrega `7 → 5`.
+
+                    Se o primeiro e o segundo hub forem iguais, a rota usa somente um hub e
+                    não existe trecho inter-hub. Ligações de um ponto para ele mesmo não
+                    entram na contagem.
+
+                    **Atenção:** o fluxo total dos trechos não representa pacotes únicos.
+                    O mesmo pacote aparece em cada parte do caminho que percorre. A demanda é
+                    igual nos dois modelos; o que muda é o caminho escolhido para ela.
+                    """
+                )
+            model_labels = {"multiple_ca": "Multiple com CA", "multiple_normal": "Multiple normal"}
+            current_key = (
+                selected_instance["name"], int(n_limit), int(override_p),
+            )
+            comparable = {
+                name: item["result"]
+                for name, item in st.session_state.get("model_results", {}).items()
+                if item.get("comparison_key") == current_key and item.get("result", {}).get("ok")
+            }
+            if len(comparable) < 2:
+                st.info(
+                    "Para comparar lado a lado, execute Calcular uma vez em Multiple com CA e "
+                    "uma vez em Multiple normal, mantendo a mesma configuração."
+                )
+
+            comparison_rows = []
+            hub_usage_rows = []
+            hub_cost_rows = []
+            analyses = {}
+            results_to_show = comparable or ({model_name: result} if result.get("ok") else {})
+            for saved_model, saved_result in results_to_show.items():
+                arc_rows, summary_rows = flow_arc_analysis(saved_result, insights["flow"])
+                analyses[saved_model] = arc_rows
+                comparison_rows.extend(
+                    {"modelo": model_labels[saved_model], **row} for row in summary_rows
+                )
+                hub_usage_rows.extend(
+                    {"modelo": model_labels[saved_model], **row}
+                    for row in route_hub_usage_analysis(saved_result, insights["flow"])
+                )
+                hub_cost_rows.extend(
+                    {"modelo": model_labels[saved_model], **row}
+                    for row in route_hub_cost_analysis(saved_result)
+                )
+
+            if comparison_rows:
+                st.markdown("#### Rotas por quantidade de hubs")
+                formatted_usage = []
+                for row in hub_usage_rows:
+                    formatted_usage.append({
+                        **row,
+                        "percentual de rotas": format_percent_br(row["percentual de rotas"]),
+                        "fluxo": format_br(row["fluxo"]),
+                        "percentual do fluxo": format_percent_br(row["percentual do fluxo"]),
+                    })
+                st.dataframe(formatted_usage, use_container_width=True, hide_index=True)
+
+                st.markdown("#### Fluxo por tipo de trecho")
+                st.dataframe(
+                    format_rows(comparison_rows, ["fluxo_total", "maior_fluxo_arco", "fluxo_medio_arco"]),
+                    use_container_width=True,
+                    hide_index=True,
+                )
+                if {"multiple_ca", "multiple_normal"}.issubset(analyses):
+                    totals_by_model = {
+                        (row["modelo"], row["tipo"]): row["fluxo_total"]
+                        for row in comparison_rows
+                    }
+                    difference_rows = []
+                    for segment_type in [
+                        "Coleta: spoke → hub",
+                        "Inter-hub: hub → hub",
+                        "Entrega: hub → spoke",
+                    ]:
+                        ca_value = totals_by_model.get(("Multiple com CA", segment_type), 0)
+                        normal_value = totals_by_model.get(("Multiple normal", segment_type), 0)
+                        difference = ca_value - normal_value
+                        variation = difference / normal_value if normal_value else None
+                        if abs(difference) < 1e-9:
+                            interpretation = "Mesmo fluxo total"
+                        elif difference > 0:
+                            interpretation = "CA transporta mais fluxo neste tipo de trecho"
+                        else:
+                            interpretation = "CA transporta menos fluxo neste tipo de trecho"
+                        difference_rows.append({
+                            "tipo de trecho": segment_type,
+                            "com CA": format_br(ca_value),
+                            "normal": format_br(normal_value),
+                            "diferença (CA - normal)": format_br(difference),
+                            "variação sobre o normal": "-" if variation is None else format_percent_br(variation),
+                            "interpretação": interpretation,
+                        })
+
+                    st.markdown("#### Diferença entre os modelos")
+                    st.dataframe(difference_rows, use_container_width=True, hide_index=True)
+                    st.caption(
+                        "A diferença é calculada como fluxo do modelo com CA menos fluxo do modelo normal. "
+                        "Valor positivo indica mais fluxo no modelo com CA; valor negativo indica menos."
+                    )
+                for saved_model, arc_rows in analyses.items():
+                    with st.expander(f"Fluxos por par de pontos — {model_labels[saved_model]}"):
+                        st.dataframe(format_rows(arc_rows, ["fluxo"]), use_container_width=True, hide_index=True)
+                st.markdown(
+                    "**Como interpretar:** compare o fluxo total `Inter-hub` com a soma de `Coleta` e "
+                    "`Entrega` para avaliar hubs versus hubs–spokes. `maior_fluxo_arco` identifica a "
+                    "conexão individual mais carregada."
+                )
+            else:
+                st.info("Execute um dos modelos para gerar a análise.")
+
+        with tabs[3]:
+            st.subheader("Análise financeira das soluções")
+            st.caption(
+                "Compara quanto cada modelo gasta na coleta, na transferência inter-hub e na entrega."
+            )
+            with st.expander("Como os custos são calculados"):
+                st.markdown(
+                    """
+                    Para cada origem e destino, a ferramenta pega a quantidade de pacotes e
+                    multiplica pelo custo do caminho escolhido:
+
+                    `custo da rota = fluxo × (custo de coleta + custo inter-hub + custo de entrega)`
+
+                    Depois, os custos de todas as rotas são somados. Uma rota com apenas um
+                    hub não tem custo inter-hub. O **custo por pacote** divide o custo pelo
+                    fluxo transportado e permite comparar grupos com volumes diferentes.
+
+                    Os dois modelos usam a mesma demanda, mas podem escolher caminhos
+                    diferentes e atribuir valores diferentes a cada trecho.
+                    """
+                )
+
+            financial_models = {}
+            for saved_model, saved_result in results_to_show.items():
+                segment_rows, total_cost, total_flow = financial_segment_analysis(saved_result)
+                if saved_result.get("route_costs"):
+                    financial_models[saved_model] = {
+                        "segments": segment_rows,
+                        "total_cost": total_cost,
+                        "total_flow": total_flow,
+                    }
+
+            if not financial_models:
+                st.info("Execute novamente pelo menos um modelo para gerar a análise financeira.")
+            else:
+                summary_financial = []
+                segment_financial = []
+                for saved_model, values in financial_models.items():
+                    label = model_labels[saved_model]
+                    summary_financial.append({
+                        "modelo": label,
+                        "custo total (R$)": format_br(values["total_cost"]),
+                        "fluxo total": format_br(values["total_flow"]),
+                        "custo por pacote (R$)": format_br(
+                            values["total_cost"] / values["total_flow"] if values["total_flow"] else 0,
+                            6,
+                        ),
+                    })
+                    for row in values["segments"]:
+                        segment_financial.append({
+                            "modelo": label,
+                            "etapa": row["etapa"],
+                            "número de pacotes": format_br(row["número de pacotes"]),
+                            "custo total (R$)": format_br(row["custo total"]),
+                            "percentual do custo": format_percent_br(row["percentual do custo"]),
+                            "custo por pacote (R$)": format_br(row["custo por pacote"], 6),
+                        })
+
+                st.markdown("#### Resumo financeiro")
+                st.dataframe(summary_financial, use_container_width=True, hide_index=True)
+
+                st.markdown("#### Custo por etapa da rota")
+                st.dataframe(segment_financial, use_container_width=True, hide_index=True)
+
+                if {"multiple_ca", "multiple_normal"}.issubset(financial_models):
+                    ca_financial = financial_models["multiple_ca"]
+                    normal_financial = financial_models["multiple_normal"]
+                    ca_by_stage = {row["etapa"]: row["custo total"] for row in ca_financial["segments"]}
+                    normal_by_stage = {row["etapa"]: row["custo total"] for row in normal_financial["segments"]}
+                    financial_difference = []
+                    comparison_stages = [
+                        ("Total da solução", ca_financial["total_cost"], normal_financial["total_cost"]),
+                        *[
+                            (stage, ca_by_stage.get(stage, 0), normal_by_stage.get(stage, 0))
+                            for stage in ["Coleta", "Inter-hub", "Entrega"]
+                        ],
+                    ]
+                    for stage, ca_value, normal_value in comparison_stages:
+                        difference = ca_value - normal_value
+                        variation = difference / normal_value if normal_value else None
+                        financial_difference.append({
+                            "item": stage,
+                            "com CA (R$)": format_br(ca_value),
+                            "normal (R$)": format_br(normal_value),
+                            "diferença CA - normal (R$)": format_br(difference),
+                            "variação": "-" if variation is None else format_percent_br(variation),
+                            "mais barato": "Com CA" if difference < 0 else "Normal" if difference > 0 else "Mesmo custo",
+                        })
+                    st.markdown("#### Diferença financeira entre os modelos")
+                    st.dataframe(financial_difference, use_container_width=True, hide_index=True)
+                    st.caption(
+                        "Diferença negativa significa que o modelo com CA ficou mais barato; "
+                        "diferença positiva significa que o modelo normal ficou mais barato."
+                    )
+
+                if any(row["custo total"] for row in hub_cost_rows):
+                    st.markdown("#### Custo das rotas com um ou dois hubs")
+                    formatted_costs = [{
+                        "modelo": row["modelo"],
+                        "uso de hubs": row["uso de hubs"],
+                        "quantidade de rotas": row["rotas"],
+                        "fluxo": format_br(row["fluxo"]),
+                        "custo total (R$)": format_br(row["custo total"]),
+                        "percentual do custo": format_percent_br(row["percentual do custo"]),
+                        "custo médio por rota (R$)": format_br(row["custo médio por rota"]),
+                        "custo por pacote (R$)": format_br(row["custo por pacote"], 6),
+                    } for row in hub_cost_rows]
+                    st.dataframe(formatted_costs, use_container_width=True, hide_index=True)
+                    st.caption(
+                        "O custo total depende do volume de cada grupo. Para comparar rotas com "
+                        "um e dois hubs, observe principalmente o custo por pacote."
+                    )
+
+        with tabs[4]:
             route_rows = routes_table(result, insights["flow"])
             if route_rows:
                 with st.expander("De onde vêm estes valores"):
@@ -666,7 +1076,7 @@ def main():
             else:
                 st.info("Nenhum atendimento por hub disponível.")
 
-        with tabs[3]:
+        with tabs[5]:
             st.subheader("Aproximação contínua — dados da instância")
             if model_name == "multiple_normal":
                 st.info(
@@ -843,7 +1253,7 @@ def main():
             else:
                 st.info("Nenhum dado de CA disponível ou a estimativa CA retornou um formato inesperado.")
 
-        with tabs[4]:
+        with tabs[6]:
             st.code(result.get("log") or "Nenhuma saída registrada.", language="text")
 
 

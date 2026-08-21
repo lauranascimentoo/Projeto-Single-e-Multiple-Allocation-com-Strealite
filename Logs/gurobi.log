@@ -7631,3 +7631,1121 @@ Solution count 2: 72858 1.21939e+06
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:08:02 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9968493350001518e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9968493350001518e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.21s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.05 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.36 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:08:28 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9943391029999475e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9943391029999475e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.10s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.05 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.22 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:49:39 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9976603259998956e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9976603259998956e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.10s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.04 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.21 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:49:53 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9982784000001266e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9982784000001266e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.10s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.04 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.23 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:50:03 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9983146469999338e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9983146469999338e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.06s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.03 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.18 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:54:08 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9984390450001229e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9984390450001229e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.05s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.03 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.13 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:58:04 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 299.852876799996
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  299.852876799996
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.05s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.03 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.13 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:59:54 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9984747569999308e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9984747569999308e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.07s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.04 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.17 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 10:59:54 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9984696289998828e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9984696289998828e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.06s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.03 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.14 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:04:05 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9987969269999303e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9987969269999303e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.05s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.03 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.12 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:06:00 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9989351709999028e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9989351709999028e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.09 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:06:14 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9989175270000123e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9989175270000123e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.02 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.08 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:09:24 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9942981110000983e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9942981110000983e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.10 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:09:35 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9989483619999373e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9989483619999373e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.02 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.09 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:13:28 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9990710290000425e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9990710290000425e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.01 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.08 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:13:44 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9989362139999866e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9989362139999866e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.02 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.09 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:17:01 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9992070409998996e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9992070409998996e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.03s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.07 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:17:03 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9988735569998971e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9988735569998971e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.10 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:18:24 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9981888349997462e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9981888349997462e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.07s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.04 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.16 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:24:38 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9988114899999346e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9988114899999346e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.05s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.10 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:27:14 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 299.923199700017
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  299.923199700017
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 1891 rows, 9010 columns and 28810 nonzeros (Min)
+Model fingerprint: 0xaa7580a9
+Model has 9000 linear objective coefficients
+Variable types: 0 continuous, 9010 integer (9010 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 429010.09041
+Presolve time: 0.04s
+Presolved: 1891 rows, 9010 columns, 28810 nonzeros
+Variable types: 0 continuous, 9010 integer (9010 binary)
+
+Root relaxation: objective 9.545959e+04, 475 iterations, 0.01 seconds (0.02 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    95459.593924 95459.5939  0.00%     -    0s
+
+Explored 1 nodes (475 simplex iterations) in 0.07 seconds (0.05 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 95459.6 429010 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.545959392439e+04, best bound 9.545959392439e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:27:24 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9993131319998065e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9993131319998065e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 1891 rows, 9010 columns and 28810 nonzeros (Min)
+Model fingerprint: 0x1d8871b7
+Model has 9000 linear objective coefficients
+Variable types: 0 continuous, 9010 integer (9010 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+00]
+
+Found heuristic solution: objective 399549.56580
+Presolve time: 0.03s
+Presolved: 1891 rows, 9010 columns, 28810 nonzeros
+Variable types: 0 continuous, 9010 integer (9010 binary)
+
+Root relaxation: objective 1.173938e+05, 677 iterations, 0.01 seconds (0.01 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    117393.78678 117393.787  0.00%     -    0s
+
+Explored 1 nodes (677 simplex iterations) in 0.06 seconds (0.04 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 117394 399550 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.173937867771e+05, best bound 1.173937867771e+05, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 11:28:11 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9993082880001748e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9993082880001748e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 1891 rows, 9010 columns and 28810 nonzeros (Min)
+Model fingerprint: 0x15398968
+Model has 9000 linear objective coefficients
+Variable types: 0 continuous, 9010 integer (9010 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+00]
+
+Found heuristic solution: objective 1346429.0492
+Presolve time: 0.03s
+Presolved: 1891 rows, 9010 columns, 28810 nonzeros
+Variable types: 0 continuous, 9010 integer (9010 binary)
+
+Root relaxation: objective 1.801908e+05, 892 iterations, 0.01 seconds (0.01 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    180190.80525 180190.805  0.00%     -    0s
+
+Explored 1 nodes (892 simplex iterations) in 0.07 seconds (0.05 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 180191 1.34643e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.801908052459e+05, best bound 1.801908052459e+05, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 13:23:32 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9989774050001870e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9989774050001870e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.98 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 13:23:41 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9992596059999778e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9992596059999778e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0xc46d300f
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-01, 6e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 1219388.1345
+Presolve time: 0.05s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 7.285799e+04, 797 iterations, 0.02 seconds (0.03 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    72857.988914 72857.9889  0.00%     -    0s
+
+Explored 1 nodes (797 simplex iterations) in 0.11 seconds (0.09 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 72858 1.21939e+06 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.285798891357e+04, best bound 7.285798891357e+04, gap 0.0000%
+
+Gurobi 13.0.2 (win64) logging started Fri Aug 21 13:53:03 2026
+
+Set parameter LogFile to value "Logs/gurobi.log"
+Set parameter TimeLimit to value 2.9988808189998963e+02
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i7-1255U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Non-default parameters:
+TimeLimit  2.9988808189998963e+02
+
+Academic license 2537843 - for non-commercial use only - registered to la___@ufmg.br
+Optimize a model with 2531 rows, 13321 columns and 42361 nonzeros (Min)
+Model fingerprint: 0x465385b3
+Model has 13310 linear objective coefficients
+Variable types: 0 continuous, 13321 integer (13321 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [3e+00, 2e+05]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+
+Found heuristic solution: objective 343961.90676
+Presolve time: 0.04s
+Presolved: 2531 rows, 13321 columns, 42361 nonzeros
+Variable types: 0 continuous, 13321 integer (13321 binary)
+
+Root relaxation: objective 9.949223e+04, 800 iterations, 0.02 seconds (0.04 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    99492.229874 99492.2299  0.00%     -    0s
+
+Explored 1 nodes (800 simplex iterations) in 0.98 seconds (0.08 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 2: 99492.2 343962 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 9.949222987440e+04, best bound 9.949222987440e+04, gap 0.0000%
