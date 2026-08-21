@@ -23,3 +23,46 @@ env/
 # Arquivos do sistema
 .DS_Store
 Thumbs.db
+
+# Outros resultados e logs
+logs/
+*.log
+
+# Artefatos do Gurobi
+*.ilp
+*.lp
+*.mps
+*.mst
+*.prm
+*.sol
+
+# Ferramentas de qualidade e testes Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Segredos locais do Streamlit
+.streamlit/secrets.toml
+!.env.example
+
+# Empacotamento Python
+build/
+dist/
+*.egg-info/
+
+# Outros editores
+.idea/
+*.code-workspace
+
+# Arquivos temporários e backups
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Arquivos do sistema operacional
+desktop.ini
